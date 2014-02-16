@@ -8,18 +8,27 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdlib.h>
+#include <vector>
 #include "file_parse_exception.h"
 
 using namespace std;
 
 class file_parser {
 
+	struct parse_data{
+		string label;
+		string opcode;
+		string operand;
+		string comments;
+	};
+
 public:
 	string line;
 	string file_name;
-
-	char *pch;
+	string token;
+	unsigned int num;
 	
 	// Constructor, filename is the parameter.  A driver program will read
 	// the filename from the command line, and pass the filename to
@@ -52,13 +61,7 @@ public:
 	int size();
 
 private:
-	struct parse_data{
-		string label;
-		string opcode;
-		string operand;
-		string comments;
-	};
-	
+	parse_data data;
 };
 
 #endif
