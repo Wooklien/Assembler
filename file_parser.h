@@ -17,13 +17,6 @@ using namespace std;
 
 class file_parser {
 
-	struct parse_data{
-		string label;
-		string opcode;
-		string operand;
-		string comments;
-	};
-
 public:
 	string line;
 	string file_name;
@@ -61,6 +54,13 @@ public:
 	int size();
 
 private:
+	struct parse_data{
+		string label;
+		string opcode;
+		string operand;
+		string comments;
+	};
+
 	parse_data data;
 };
 
