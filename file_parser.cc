@@ -21,102 +21,112 @@ void file_parser::read_file() {
 	}
 
 	while(!ifs.eof()) { // Reads until end of file. 
-		getline(ifs,line); // line = whole line from file. 
-		num++; // Incrementing number of lines. 
+		reset_data();
+
+		getline(ifs,line); // Line = 1 whole line in file.
+		num++; // Incrementing number of lines.
 
 		/* Checks to see if the line is a Comment.
 			if it is, place it in the label slot. 
 		*/
-		if(line[0] == '.') { 
+		if(line[0] == '.') {
 			data.label = line;
-			// cout << data.label << endl;
+
+			// Push data struct to vector.
 		}
 		else {
-			istringstream iss(line);
-			vector<string> v;
-			vector<string>::iterator v_iter;
-			string comment;
+			stringstream ss(line);
+			string comment = "";
 
-			// Check to see if first character in line is a whitespaces. Push white space into vector. 
-			if(line[0] == ' '  || line[0] == '\t') {
+			// Vector
+			vector<string> v; // Vector of tokens.
+			vector<string>::iterator v_iter;
+
+			// Check to see if the first character in the line is a whitespace. Push it into vector.
+			if(line[0] == ' ' || line[0] == '\t') {
 				v.push_back("");
 			}
-			
-			while(!iss.eof()) {
 
+			while(!ss.eof()) {
 				size_t found = line.find('\t');
 				if(found !=string::npos) {
-					getline(iss, token, '\t'); // Handles Tab Characters.
+					getline(ss, token, '\t'); // Handles Tab Characters.
 				}
 				else {
-					getline(iss, token, ' '); // Handles Whitespace Characters.
+					getline(ss, token, ' '); // Handles Whitespace Characters.
 				}
 
 				// Checks for '.' and if it is the rest of the line is a comment. 
 				if(token[0] == '.') {
 					comment = token + " ";
-					getline(iss,token);
+					getline(ss,token);
 
 					if(token[0] != '.'){
 						comment += token;
 					}
 					v.push_back(comment); // Push comment to vector. 
 				}
+
+				// Checks for '.' and if it is the rest of the line is a comment. 
 				else if(token[1] == '\'') {
 					comment = token + " ";
-					getline(iss,token);
+					getline(ss,token);
 
 					if(token[1] != '\''){
 						comment += token;
 					}
 					v.push_back(comment); // Push comment to vector. 
 				}
-				
-				// Addes token that aren't empty into vector. 
+
 				else if(token.size() != 0 && (comment[0] != '.' || comment[1] != '\'')) {
 					v.push_back(token);
 				}
 			}
 
-			// Will remove later, reads through the vector. and prints each token. 
-			for(v_iter = v.begin(); v_iter != v.end(); v_iter++)
-				cout << *v_iter << endl;
-
 			if(v.size() >= 5) {
-				// Print Error Message, Too many tokens.
-				cout << "Retarded LIne." << endl;
+				cout << "TOO MANY TOKENS!";
 			}
 
-			
 			if(v.size() == 4) {
 				data.label = v[0];
 				data.opcode = v[1];
 				data.operand = v[2];
 				data.comments = v[3];
 			}
-		}			
-	}
 
-	/* Remove multiple spaces from line. 
-	while(getline(ifs,line)) {
-		
-		for(string::const_iterator iter=line.begin(); iter!=line.end(); iter++) {
-			if(isspace(*iter)) {
-				while(isspace(*(iter+1)))
-					advance(iter,1);
+			else if(v.size() == 3) {
+				if(comment[0] != '.' || comment[1] != '\'') {
+					data.label = v[0];
+					data.opcode = v[1];
+					data.operand = v[2];
+				}
+				else {
+					data.opcode = v[1];
+					data.operand = v[2];
+					data.comments = v[3];
+				}
 			}
 
-			cout << *iter << endl;
+			else if(v.size() == 2) {
+				data.label == v[0];
+				data.opcode == v[1];
+			}
+
+			else if(v.size() == 1) {
+				data.opcode = v[0];
+			}
+			v.clear();
 		}
-	}
-	*/
+		cout << data.label << '\t' << data.opcode << '\t' << data.operand << '\t' << data.comments << '\t' << endl;
+	} // End outer while statement.
 
 	ifs.close();
-}
+} // End read_file().
 
 string file_parser::get_token(unsigned int, unsigned int) {
 	return "0";
 }
+
 
 void file_parser::print_file() {
 
@@ -124,4 +134,11 @@ void file_parser::print_file() {
 
 int file_parser::size() {
 	return num;
+}
+
+void file_parser::reset_data() {
+	data.label = "";
+	data.opcode = "";
+	data.operand = "";
+	data.comments = "";
 }

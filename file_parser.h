@@ -21,6 +21,7 @@ public:
 	string line;
 	string file_name;
 	string token;
+
 	unsigned int num;
 	
 	// Constructor, filename is the parameter.  A driver program will read
@@ -52,6 +53,8 @@ public:
 
 	// returns the number of lines in the source code file
 	int size();
+
+	void reset_data();
 
 private:
 	struct parse_data{
