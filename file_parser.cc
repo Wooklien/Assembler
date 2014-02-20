@@ -127,8 +127,15 @@ void file_parser::read_file() {
 	file.close();
 } // End read_file().
 
-string file_parser::get_token(unsigned int, unsigned int) {
-	return "0";
+string file_parser::get_token(unsigned int line_row, unsigned int label_col) {
+    if(label_col == 0)
+        return v_data[line_row-1].label;
+    else if(label_col == 1) 
+        return v_data[line_row-1].opcode;
+    else if(label_col == 2) 
+        return v_data[line_row-1].operand;
+    else 
+        return v_data[line_row-1].comments;
 }
 
 
