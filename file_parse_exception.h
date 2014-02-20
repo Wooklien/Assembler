@@ -1,7 +1,7 @@
 /* file_parse_exception.h
-	Exception class for file_parser
-	CS530 Spring 2014
-	Alan Riggins
+	TEAM TEXAS
+	Quoc Lien, Jose Paterno, Jessica To, Bryant To.
+	CS530, Spring 2014
 */
 
 #ifndef FILE_PARSE_EXCEPTION_H

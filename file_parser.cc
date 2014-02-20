@@ -14,21 +14,21 @@ file_parser::~file_parser() {
 }
 
 void file_parser::read_file() {
-	ifstream ifs;
+	ifstream file;
 
 	// Opens file read from commandline. 
-	ifs.open(file_name.c_str());
+	file.open(file_name.c_str());
 
 	// Checks for valid file. 
-	if(!ifs) {
+	if(!file) {
 		// Throw Error Message Please!
 		exit(1);
 	}
 
-	while(!ifs.eof()) { // Reads until end of file. 
+	while(!file.eof()) { // Reads until end of file. 
 		reset_data();
 
-		getline(ifs,line); // Line = 1 whole line in file.
+		getline(file,line); // Line = 1 whole line in file.
 		num++; // Incrementing number of lines.
 
 		/* Checks to see if the line is a Comment.
@@ -38,8 +38,8 @@ void file_parser::read_file() {
 			data.label = line;
 		}
 		else {
-			stringstream ss(line);
-			string comment = "";
+			stringstream s_string(line);
+			string t_comment = "";
 
 			// Vector
 			vector<string> v; // Vector of tokens.
@@ -50,44 +50,44 @@ void file_parser::read_file() {
 				v.push_back("");
 			}
 
-			while(!ss.eof()) {
+			while(!s_string.eof()) {
 				size_t found = line.find('\t');
 				if(found !=string::npos) {
-					getline(ss, token, '\t'); // Handles Tab Characters.
+					getline(s_string, token, '\t'); // Handles Tab Characters.
 				}
 				else {
-					getline(ss, token, ' '); // Handles Whitespace Characters.
+					getline(s_string, token, ' '); // Handles Whitespace Characters.
 				}
 
 				// Checks for '.' and if it is the rest of the line is a comment. 
 				if(token[0] == '.') {
-					comment = token + " ";
-					getline(ss,token);
+					t_comment = token + " ";
+					getline(s_string,token);
 
 					if(token[0] != '.'){
-						comment += token;
+						t_comment += token;
 					}
-					v.push_back(comment); // Push comment to vector. 
+					v.push_back(t_comment); // Push comment to vector. 
 				}
 
 				// Checks for '.' and if it is the rest of the line is a comment. 
 				else if(token[1] == '\'') {
-					comment = token + " ";
-					getline(ss,token);
+					t_comment = token + " ";
+					getline(s_string,token);
 
 					if(token[1] != '\''){
-						comment += token;
+						t_comment += token;
 					}
-					v.push_back(comment); // Push comment to vector. 
+					v.push_back(t_comment); // Push comment to vector. 
 				}
 
-				else if(token.size() != 0 && (comment[0] != '.' || comment[1] != '\'')) {
+				else if(token.size() != 0 && (t_comment[0] != '.' || t_comment[1] != '\'')) {
 					v.push_back(token);
 				}
 			}
 
 			if(v.size() >= 5) {
-				cout << "TOO MANY TOKENS!";
+				// Print Error MESSAGE!
 			}
 
 			if(v.size() == 4) {
@@ -98,7 +98,7 @@ void file_parser::read_file() {
 			}
 
 			else if(v.size() == 3) {
-				if(comment[0] != '.' || comment[1] != '\'') {
+				if(t_comment[0] != '.' || t_comment[1] != '\'') {
 					data.label = v[0];
 					data.opcode = v[1];
 					data.operand = v[2];
@@ -114,13 +114,17 @@ void file_parser::read_file() {
 				data.opcode = v[1];
 				data.label = v[0];
 			}
+
+			else if(v.size() ==1) {
+				data.label = v[0];
+			}
 			v.clear();
 		}
 		v_data.push_back(data);
-		cout << data.label << '\t' << data.opcode << '\t' << data.operand << '\t' << data.comments << '\t' << endl;
+		cout << data.label << '\t' << data.opcode << '\t' << data.operand << '\t' << data.comments << '\t' << endl;	
 	} // End outer while statement.
 
-	ifs.close();
+	file.close();
 } // End read_file().
 
 string file_parser::get_token(unsigned int, unsigned int) {

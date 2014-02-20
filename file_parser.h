@@ -20,12 +20,6 @@ using namespace std;
 class file_parser {
 
 public:
-	string line;
-	string file_name;
-	string token;
-
-	unsigned int num;
-	
 	// Constructor, filename is the parameter.  A driver program will read
 	// the filename from the command line, and pass the filename to
 	// the file_parser constructor.  Filenames must not be hard-coded.
@@ -56,9 +50,13 @@ public:
 	// returns the number of lines in the source code file
 	int size();
 
-	void reset_data();
-
 private:
+	string line;
+	string file_name;
+	string token;
+
+	unsigned int num;
+
 	struct parse_data{
 		string label;
 		string opcode;
@@ -69,6 +67,10 @@ private:
 	parse_data data;
 
 	vector<parse_data> v_data;
+
+	// Resets parse_data structure.
+	void reset_data();
+
 };
 
 #endif
