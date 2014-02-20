@@ -31,8 +31,6 @@ void file_parser::read_file() {
 		*/
 		if(line[0] == '.') {
 			data.label = line;
-
-			// Push data struct to vector.
 		}
 		else {
 			stringstream ss(line);
@@ -117,6 +115,7 @@ void file_parser::read_file() {
 			}
 			v.clear();
 		}
+		v_data.push_back(data);
 		cout << data.label << '\t' << data.opcode << '\t' << data.operand << '\t' << data.comments << '\t' << endl;
 	} // End outer while statement.
 

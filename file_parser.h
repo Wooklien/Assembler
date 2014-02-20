@@ -65,7 +65,8 @@ private:
 	};
 
 	parse_data data;
+
+	vector<parse_data> v_data;
 };
 
 #endif
-
