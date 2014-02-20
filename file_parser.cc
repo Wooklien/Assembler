@@ -1,3 +1,8 @@
+/* file_parser.cc
+	TEAM TEXAS
+	Quoc Lien, Jose Paterno, Jessica To, Bryant To.
+	CS530, Spring 2014
+*/
 #include "file_parser.h"
 
 file_parser::file_parser(string s) {
@@ -106,12 +111,8 @@ void file_parser::read_file() {
 			}
 
 			else if(v.size() == 2) {
-				data.label == v[0];
-				data.opcode == v[1];
-			}
-
-			else if(v.size() == 1) {
-				data.opcode = v[0];
+				data.opcode = v[1];
+				data.label = v[0];
 			}
 			v.clear();
 		}

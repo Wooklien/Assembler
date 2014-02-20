@@ -1,4 +1,6 @@
 /* file_parser.h
+	TEAM TEXAS
+	Quoc Lien, Jose Paterno, Jessica To, Bryant To.
 	CS530, Spring 2014
 */
 
