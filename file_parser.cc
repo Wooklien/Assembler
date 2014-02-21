@@ -129,7 +129,7 @@ void file_parser::read_file() {
 } // End read_file().
 
 string file_parser::get_token(unsigned int line_row, unsigned int label_col) {
-    if(label_col == 0)
+	if(label_col == 0)
         return v_data[line_row-1].label;
     else if(label_col == 1) 
         return v_data[line_row-1].opcode;
@@ -141,9 +141,7 @@ string file_parser::get_token(unsigned int line_row, unsigned int label_col) {
 
 
 void file_parser::print_file() {
-	for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it){
-	 	std::cout<<*it<<'\n';
-	 }
+
 }
 
 int file_parser::size() {
