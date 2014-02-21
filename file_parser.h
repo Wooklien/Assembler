@@ -39,7 +39,7 @@ public:
 	// are zero based.  Returns the empty string "" if there is no 
 	// token at that location. column refers to the four fields
 	// identified above.
-	string get_token(unsigned int, unsigned int);
+	string get_token(unsigned int line_row, unsigned int label_col);
 
 	// prints the source code file to stdout.  Should not repeat 
 	// the exact formatting of the original, but uses tabs to align

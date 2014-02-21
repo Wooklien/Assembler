@@ -21,7 +21,7 @@ void file_parser::read_file() {
 
 	// Checks for valid file. 
 	if(!file) {
-		// Throw Error Message Please!
+		throw file_parse_exception("invalid file.");
 		exit(1);
 	}
 
@@ -51,12 +51,12 @@ void file_parser::read_file() {
 			}
 
 			while(!s_string.eof()) {
-				size_t found = line.find('\t');
+				size_t found = line.find(' ');
 				if(found !=string::npos) {
-					getline(s_string, token, '\t'); // Handles Tab Characters.
+					getline(s_string, token, ' '); // Handles Tab Characters.
 				}
 				else {
-					getline(s_string, token, ' '); // Handles Whitespace Characters.
+					getline(s_string, token, '\t'); // Handles Whitespace Characters.
 				}
 
 				// Checks for '.' and if it is the rest of the line is a comment. 
@@ -87,7 +87,8 @@ void file_parser::read_file() {
 			}
 
 			if(v.size() >= 5) {
-				// Print Error MESSAGE!
+				string s = static_cast<ostringstream*>(&(ostringstream()<<num))->str();
+				throw file_parse_exception("too many tokens at line " + s );
 			}
 
 			if(v.size() == 4) {
@@ -127,8 +128,15 @@ void file_parser::read_file() {
 	file.close();
 } // End read_file().
 
-string file_parser::get_token(unsigned int, unsigned int) {
-	return "0";
+string file_parser::get_token(unsigned int line_row, unsigned int label_col) {
+	if(label_col == 0)
+        return v_data[line_row-1].label;
+    else if(label_col == 1) 
+        return v_data[line_row-1].opcode;
+    else if(label_col == 2) 
+        return v_data[line_row-1].operand;
+    else 
+        return v_data[line_row-1].comments;
 }
 
 
