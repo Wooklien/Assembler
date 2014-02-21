@@ -51,12 +51,12 @@ void file_parser::read_file() {
 			}
 
 			while(!s_string.eof()) {
-				size_t found = line.find('\t');
+				size_t found = line.find(' ');
 				if(found !=string::npos) {
-					getline(s_string, token, '\t'); // Handles Tab Characters.
+					getline(s_string, token, ' '); // Handles Tab Characters.
 				}
 				else {
-					getline(s_string, token, ' '); // Handles Whitespace Characters.
+					getline(s_string, token, '\t'); // Handles Whitespace Characters.
 				}
 
 				// Checks for '.' and if it is the rest of the line is a comment. 
