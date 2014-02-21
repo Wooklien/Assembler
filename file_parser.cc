@@ -141,7 +141,9 @@ string file_parser::get_token(unsigned int line_row, unsigned int label_col) {
 
 
 void file_parser::print_file() {
-
+	for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it){
+	 	std::cout<<*it<<'\n';
+	 }
 }
 
 int file_parser::size() {
