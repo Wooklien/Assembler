@@ -21,7 +21,7 @@ void file_parser::read_file() {
 
 	// Checks for valid file. 
 	if(!file) {
-		// Throw Error Message Please!
+		throw file_parse_exception("invalid file.");
 		exit(1);
 	}
 
@@ -87,7 +87,8 @@ void file_parser::read_file() {
 			}
 
 			if(v.size() >= 5) {
-				// Print Error MESSAGE!
+				string s = static_cast<ostringstream*>(&(ostringstream()<<num))->str();
+				throw file_parse_exception("too many tokens at line " + s );
 			}
 
 			if(v.size() == 4) {
