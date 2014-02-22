@@ -43,7 +43,6 @@ void file_parser::read_file() {
 
 			// Vector
 			vector<string> v; // Vector of tokens.
-			vector<string>::iterator v_iter;
 
 			// Check to see if the first character in the line is a whitespace. Push it into vector.
 			if(line[0] == ' ' || line[0] == '\t') {
@@ -112,8 +111,8 @@ void file_parser::read_file() {
 			}
 
 			else if(v.size() == 2) {
-				data.opcode = v[1];
 				data.label = v[0];
+				data.opcode = v[1];
 			}
 
 			else if(v.size() ==1) {
@@ -122,7 +121,6 @@ void file_parser::read_file() {
 			v.clear();
 		}
 		v_data.push_back(data);
-		cout << data.label << '\t' << data.opcode << '\t' << data.operand << '\t' << data.comments << '\t' << endl;	
 	} // End outer while statement.
 
 	file.close();
