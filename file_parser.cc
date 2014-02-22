@@ -139,7 +139,13 @@ string file_parser::get_token(unsigned int line_row, unsigned int label_col) {
 
 
 void file_parser::print_file() {
-
+	for(unsigned int i = 0;i<v_data.size();i++){
+		cout<<v_data[i].label<<'\t';
+		cout<<v_data[i].opcode<<'\t';
+		cout<<v_data[i].operand<<'\t';
+		cout<<v_data[i].comments<<endl;
+	}
+	cout<<'\n';
 }
 
 int file_parser::size() {
