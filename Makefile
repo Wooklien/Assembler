@@ -1,4 +1,7 @@
 # Makefile for Project1
+#TEAM TEXAS
+#Quoc Lien, Jose Paterno, Jessica To, Bryant To.
+#CS530, Spring 2014
 
 TORM = file_parser.o driver.o driver
 CC = g++
