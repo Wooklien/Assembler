@@ -1,6 +1,8 @@
-/* file_parse_exception.h
+/* file_parser.h
 	TEAM TEXAS
 	Quoc Lien, Jose Paterno, Jessica To, Bryant To.
+	masc1216
+	prog1
 	CS530, Spring 2014
 */
 
