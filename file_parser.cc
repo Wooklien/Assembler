@@ -1,8 +1,11 @@
-/* file_parser.cc
+/* file_parser.h
 	TEAM TEXAS
 	Quoc Lien, Jose Paterno, Jessica To, Bryant To.
+	masc1216
+	prog1
 	CS530, Spring 2014
 */
+	
 #include "file_parser.h"
 
 file_parser::file_parser(string s) {
@@ -145,7 +148,6 @@ void file_parser::print_file() {
 		cout<<v_data[i].operand<<'\t';
 		cout<<v_data[i].comments<<endl;
 	}
-	cout<<'\n';
 }
 
 int file_parser::size() {
