@@ -55,11 +55,3 @@ string opcodetab::get_code(string opcode) {
 	}
 	return opcode;
 }
-
-
-
-int main(){
-	opcodetab opcode;
-	opcode.instr_iterator();	
-
-}
