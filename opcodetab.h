@@ -64,11 +64,8 @@ class opcodetab {
     
         map<string,pair<string,int> > m;
     			
-    	bool opcode_exists (string s) {
-            if (m.find(s) == m.end() ) 
-                return false;
-            return true;   
-    }
+    	bool opcode_exists (string s);
+        string upper(string s);
 
 };
 
