@@ -10,12 +10,9 @@
 #define OPCODETAB_H_
 
 #include <string>
-#include <fstream>
-#include <iostream>
 #include <sstream>
-#include <stdlib.h>
-#include <vector>
-#include <map> 
+#include <map>
+#include <utility> 
 
 using namespace std;
 
@@ -66,6 +63,8 @@ class opcodetab {
     			
     	bool opcode_exists (string s);
         string upper(string s);
+
+        string get_code(string opcode);
 
 };
 
