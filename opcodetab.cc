@@ -37,14 +37,6 @@ int opcodetab::get_instruction_size(string opcode){
 	}
 }
 
-//this is not a method that is part of the project, so we have to remove it later. 
-void opcodetab::instr_iterator(){
-	map<string,pair<string,int> >::iterator it = m.begin();
-	for(std::map<string,pair<string,int> >::iterator it = m.begin(); it!=m.end();++it){
-		std::cout<<it->first<<endl;
-	}
-}
-
 bool opcodetab::opcode_exists(string s) {
 	if(m.find(s) == m.end()) {
 		return false;
