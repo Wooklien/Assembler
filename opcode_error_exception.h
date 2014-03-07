@@ -5,7 +5,6 @@
 	CS530 Spring 2014
 	Alan Riggins
 */
-
 #ifndef OPCODE_ERROR_EXCEPTION_H
 #define OPCODE_ERROR_EXCEPTION_H
 
