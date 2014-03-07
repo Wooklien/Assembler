@@ -20,8 +20,21 @@ string opcodetab::get_machine_code(string){
 	
 }
 
-int opcodetab::get_instruction_size(string){
-	return 0;
+int opcodetab::get_instruction_size(string opcode){
+	if(opcode_exists(get_code(opcode))) {
+		if(opcode[0] == '+') {
+			return 4;
+		}
+		else {
+			map<string, pair<string,int> >::iterator m_iter;
+			m_iter = m.find(opcode);
+
+			return m_iter->second.second;
+		}
+	}
+	else {
+		// Throw Error
+	}
 }
 
 //this is not a method that is part of the project, so we have to remove it later. 
@@ -30,6 +43,25 @@ void opcodetab::instr_iterator(){
 	for(std::map<string,pair<string,int> >::iterator it = m.begin(); it!=m.end();++it){
 		std::cout<<it->first<<endl;
 	}
+}
+
+bool opcodetab::opcode_exists(string s) {
+	if(m.find(s) == m.end()) {
+		return false;
+	}
+	return true;
+}
+
+string opcodetab::get_code(string opcode) {
+	if(opcode[0] == '+') {
+		stringstream sstring(opcode);
+		string tmp;
+
+		getline(sstring, tmp, '+');
+
+		return tmp;
+	}
+	return opcode;
 }
 
 
