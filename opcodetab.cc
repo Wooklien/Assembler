@@ -38,9 +38,7 @@ int opcodetab::get_instruction_size(string opcode){
 			return m_iter->second.second;
 		}
 	}
-	else {
-		// Throw Error
-	}
+	else throw opcode_error_exception("Invalid opcode: " + opcode + " does not exist.");
 }
 
 bool opcodetab::opcode_exists(string s) {
