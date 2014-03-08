@@ -9,15 +9,17 @@
 #ifndef OPCODETAB_H_
 #define OPCODETAB_H_
 
+#include <ctime>
+#include <stdlib.h>
 #include <string>
 #include <sstream>
 #include <map>
-#include <utility> 
-#include <locale>
+#include <utility>
+#include <iostream>
+#include "opcode_error_exception.h"
 
 using namespace std;
 
-	
 const string CODES [] = {"ADD", "ADDF", "ADDR", "AND", "CLEAR", "COMP", "COMPF", "COMPR",
 			"DIV", "DIVF", "DIVR", "FIX", "FLOAT", "HIO", "J", "JEQ", "JGT", "JLT",
 			"JSUB", "LDA", "LDB", "LDCH", "LDF", "LDL", "LDS", "LDT", "LDX", "LPS",
@@ -34,6 +36,13 @@ const string MCODE [] = {"18","58","90","40","B4","28","88","A0","24","64","9C",
 const int INSTR_SIZE [] = {3,3,2,3,2,3,3,2,3,3,2,1,1,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
         		3,3,2,1,3,3,2,3,2,2,1,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,3,1,3,2,3};
 
+const string LULZ_ERRS [] = {"Opcode not found. Not our problem, Mr. Riggins. It's all you!", 
+                                "Opcode not found. Rotten Bananas!", 
+                                "Opcode not found. We're not good enough for you....", 
+                                "Opcode not found. Please don't deduct points from us ):",
+                                "Opcode not found. Please stop trying to break our code, it's not funny if you do", 
+                                "Opcode not found. Nice try, but no. No cookie for you Mr. Riggins!"}; 
+
 
 class opcodetab {
     public:
@@ -48,7 +57,7 @@ class opcodetab {
         // Note that opcodes may be prepended with a '+'.
         // throws an opcode_error_exception if the opcode is not
         // found in the table.
-        string get_machine_code(string);
+        string get_machine_code(string opcode);
 
         // takes a SIC/XE opcode and returns the number of bytes
         // needed to encode the instruction, which is an int in
@@ -56,17 +65,15 @@ class opcodetab {
         // NOTE: the opcode must be prepended with a '+' for format 4.
         // throws an opcode_error_exception if the opcode is not
         // found in the table.
-        int get_instruction_size(string);
+        int get_instruction_size(string opcode);
 
     private:
-    
         map<string,pair<string,int> > m;
-    	map<string, pair<string,int> >::iterator m_iter;		
+        map<string, pair<string,int> >::iterator m_iter;
+
+        string get_code(string opcode);		
     	bool opcode_exists (string s);
         string upper(string s);
-
-        string get_code(string opcode);
-
 };
 
 #endif
