@@ -18,7 +18,7 @@ opcodetab::opcodetab(){
 string opcodetab::get_machine_code(string opcode){
     string tmp_opcode = upper(opcode);
     if(tmp_opcode[0] == '+'){
-        get_code(tmp_opcode);
+        tmp_opcode = get_code(tmp_opcode);
     }
     if(opcode_exists(tmp_opcode)){
         m_iter = m.find(tmp_opcode);
