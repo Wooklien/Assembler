@@ -33,7 +33,6 @@ int opcodetab::get_instruction_size(string opcode){
 			return 4;
 		}
 		else {
-			map<string, pair<string,int> >::iterator m_iter;
 			m_iter = m.find(opcode);
 
 			return m_iter->second.second;
