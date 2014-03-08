@@ -16,8 +16,17 @@ opcodetab::opcodetab(){
 }
 
 string opcodetab::get_machine_code(string){
-	return "why?";
-	
+    string tmp_opcode = upper(opcode);
+    if(tmp_opcode[0] == '+'){
+        for( string::size_type i=tmp_opcode.begin(); i < tmp_opcode.end(); i++ ) 
+             tmp_opcode[i] = tmp_opcode[i+1];
+        tmp_opcode.resize(opcode.length()-1);
+    }
+    if(opcode_exists(tmp_opcode)){
+        m_iter = m.find(tmp_opcode);
+        return m_iter->second.first;        
+    }
+    else throw opcode_error_exception("Invalid opcode: " + opcode + " does not exist.");
 }
 
 int opcodetab::get_instruction_size(string opcode){
@@ -54,4 +63,11 @@ string opcodetab::get_code(string opcode) {
 		return tmp;
 	}
 	return opcode;
+}
+
+string upper(string s){
+    locale loc;
+    for( string::size_type i=0; i < s.length(); i++ ) 
+        s = toupper(s[i], loc);
+    return s;
 }
