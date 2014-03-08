@@ -7,6 +7,7 @@
 */
 
 #include "opcodetab.h"
+#include "opcode_error_exception.h"
 
 opcodetab::opcodetab(){
 	
