@@ -15,12 +15,10 @@ opcodetab::opcodetab(){
 	}	
 }
 
-string opcodetab::get_machine_code(string){
+string opcodetab::get_machine_code(string opcode){
     string tmp_opcode = upper(opcode);
     if(tmp_opcode[0] == '+'){
-        for( string::size_type i=tmp_opcode.begin(); i < tmp_opcode.end(); i++ ) 
-             tmp_opcode[i] = tmp_opcode[i+1];
-        tmp_opcode.resize(opcode.length()-1);
+        get_code(tmp_opcode);
     }
     if(opcode_exists(tmp_opcode)){
         m_iter = m.find(tmp_opcode);
