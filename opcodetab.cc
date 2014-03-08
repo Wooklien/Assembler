@@ -7,7 +7,6 @@
 */
 
 #include "opcodetab.h"
-#include "opcode_error_exception.h"
 
 opcodetab::opcodetab(){
 	
@@ -17,7 +16,8 @@ opcodetab::opcodetab(){
 }
 
 string opcodetab::get_machine_code(string opcode){
-    string tmp_opcode = upper(opcode);
+	string tmp_opcode = upper(opcode);
+
     if(tmp_opcode[0] == '+'){
         tmp_opcode = get_code(tmp_opcode);
     }
@@ -25,25 +25,31 @@ string opcodetab::get_machine_code(string opcode){
         m_iter = m.find(tmp_opcode);
         return m_iter->second.first;        
     }
-    else throw opcode_error_exception("Invalid opcode: " + opcode + " does not exist.");
+    else {
+        srand( time(0) + rand() );
+    	throw opcode_error_exception(LULZ_ERRS[rand()%6]);
+    }
 }
 
 int opcodetab::get_instruction_size(string opcode){
-	if(opcode_exists(get_code(opcode))) {
-		if(opcode[0] == '+') {
+	string tmp_opcode = upper(opcode);
+	if(opcode_exists(get_code(tmp_opcode))) {
+		if(tmp_opcode[0] == '+') {
 			return 4;
 		}
 		else {
-			m_iter = m.find(opcode);
-
+			m_iter = m.find(tmp_opcode);
 			return m_iter->second.second;
 		}
 	}
-	else throw opcode_error_exception("Invalid opcode: " + opcode + " does not exist.");
+	else {
+        srand( time(0)+rand() );
+		throw opcode_error_exception(LULZ_ERRS[rand()%6]);
+	}
 }
 
 bool opcodetab::opcode_exists(string s) {
-	if(m.find(s) == m.end()) {
+	if(m.find(upper(s)) == m.end()) {
 		return false;
 	}
 	return true;
@@ -51,19 +57,24 @@ bool opcodetab::opcode_exists(string s) {
 
 string opcodetab::get_code(string opcode) {
 	if(opcode[0] == '+') {
-		stringstream sstring(opcode);
 		string tmp;
 
-		getline(sstring, tmp, '+');
+		tmp = opcode.erase(0,1);
 
 		return tmp;
 	}
 	return opcode;
 }
 
-string upper(string s){
-    locale loc;
-    for( string::size_type i=0; i < s.length(); i++ ) 
-        s = toupper(s[i], loc);
-    return s;
+string opcodetab::upper(string s){
+	string tmp = s;
+	string::iterator i = tmp.begin();
+	string::iterator end = tmp.end();
+
+	while (i != end) {
+  		*i = std::toupper((unsigned char)*i);
+  		++i;
+  	}
+
+  	return tmp;
 }
