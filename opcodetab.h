@@ -61,7 +61,7 @@ class opcodetab {
     private:
     
         map<string,pair<string,int> > m;
-    			
+    	map<string, pair<string,int> >::iterator m_iter;		
     	bool opcode_exists (string s);
         string upper(string s);
 
