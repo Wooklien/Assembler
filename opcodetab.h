@@ -1,7 +1,7 @@
 /* opcodetab.h
  * TEAM TEXAS
  * Quoc Lien, Jose Paterno, Jessica To, Bryant To.
- * masc
+ * masc1216
  * prog2
  * CS530, Spring 2014
 */
