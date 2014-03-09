@@ -1,6 +1,6 @@
 /* opcode_error_exception.h
   Team Texas - Jose Paterno, Jessica To, Quoc Lien, Bryant To
-  Masc xxxx
+  masc1216
 	Exception class for opcodetab
 	CS530 Spring 2014
 	Alan Riggins
