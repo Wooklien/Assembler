@@ -1,4 +1,4 @@
-/* file_parser.h
+/* file_parse_exception.h
 	TEAM TEXAS
 	Quoc Lien, Jose Paterno, Jessica To, Bryant To.
 	masc1216

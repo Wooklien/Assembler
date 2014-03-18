@@ -1,4 +1,4 @@
-/* file_parser.h
+/* file_parser.cc
 	TEAM TEXAS
 	Quoc Lien, Jose Paterno, Jessica To, Bryant To.
 	masc1216
@@ -11,9 +11,6 @@
 file_parser::file_parser(string s) {
 	file_name = s;
 	num = 0;
-}
-
-file_parser::~file_parser() {
 }
 
 void file_parser::read_file() {

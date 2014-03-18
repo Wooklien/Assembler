@@ -27,9 +27,6 @@ public:
 	// the file_parser constructor.  Filenames must not be hard-coded.
 	file_parser(string s);
 
-	// Destructor
-	~file_parser(void);
-
 	// reads the source file, storing the information is some
 	// auxiliary data structure you define in the private section. 
 	// Throws a file_parse_exception if an error occurs.
