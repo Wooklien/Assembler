@@ -17,33 +17,48 @@ opcodetab::opcodetab(){
 
 string opcodetab::get_machine_code(string opcode){
 	string tmp_opcode = upper(opcode);
-
-    if(tmp_opcode[0] == '+'){
+	
+    if(opcode_exists(get_code(tmp_opcode))){
         tmp_opcode = get_code(tmp_opcode);
-    }
-    if(opcode_exists(tmp_opcode)){
-        m_iter = m.find(tmp_opcode);
-        return m_iter->second.first;        
+        if (opcode[0] == '+'){
+            if (ext_valid(tmp_opcode)){
+                m_iter = m.find(tmp_opcode);
+                return m_iter->second.first;
+            }
+            else {
+                srand( time(0) + rand() );
+                throw opcode_error_exception(LULZ_ERRS[rand()%6]);
+            }    
+        }
+        else {
+            m_iter = m.find(tmp_opcode);
+            return m_iter->second.first;
+        }
     }
     else {
         srand( time(0) + rand() );
-    	throw opcode_error_exception(LULZ_ERRS[rand()%6]);
+        throw opcode_error_exception(LULZ_ERRS[rand()%6]);
     }
 }
 
 int opcodetab::get_instruction_size(string opcode){
 	string tmp_opcode = upper(opcode);
-	if(opcode_exists(get_code(tmp_opcode))) {
-		if(tmp_opcode[0] == '+') {
-			return 4;
-		}
+	if(opcode_exists(get_code(tmp_opcode))){
+        if (tmp_opcode[0] == '+'){
+            if (ext_valid(tmp_opcode))
+                return 4;  
+            else {
+                srand( time(0)+rand() );
+		        throw opcode_error_exception(LULZ_ERRS[rand()%6]);
+            }
+        }     
 		else {
 			m_iter = m.find(tmp_opcode);
 			return m_iter->second.second;
 		}
 	}
 	else {
-        srand( time(0)+rand() );
+        	srand( time(0)+rand() );
 		throw opcode_error_exception(LULZ_ERRS[rand()%6]);
 	}
 }
@@ -77,4 +92,12 @@ string opcodetab::upper(string s){
   	}
 
   	return tmp;
+}
+
+bool opcodetab:: ext_valid(string s){
+    s = get_code(s);
+    m_iter = m.find(s);
+    if( m_iter->second.second == 3) 
+        return true;   
+    return false;
 }
