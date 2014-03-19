@@ -74,6 +74,7 @@ class opcodetab {
         string get_code(string opcode);		
     	bool opcode_exists (string s);
         string upper(string s);
+        bool ext_valid(string s);
 };
 
 #endif
