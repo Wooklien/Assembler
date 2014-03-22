@@ -76,12 +76,30 @@ void sicxe_asm::first(string filename) {
 }
 
 void sicxe_asm::write_file(string filename) {
-	for(unsigned int i = 0; i < v_data.size(); i++) {
-		cout << hex << v_data[i].address << '\t';
-		cout << v_data[i].label << '\t';
-		cout << v_data[i].opcode << '\t';
-		cout << v_data[i].operand << endl;
-	}
+
+	const string columns [] = { "Line#","Address","Label","Opcode","Operand" };
+	const string purdylines [] = { "=====", "=======", "=====", "======", "=======" };
+	filename = filename.substr(0,filename.length()-4) + ".lis";
+	myfile.open(filename.c_str());
+	for (int i = 0; i < 5; i++) 
+        myfile << setw(15) << setfill(' ') << columns[i]; 
+    myfile << endl;
+    for (int i = 0; i < 5; i++)
+	    myfile << setw(15) << setfill(' ') << purdylines[i];
+	myfile << endl;
+	for (int i = 0; i < v_data.size(); i++){
+        myfile << setw(15) << setfill(' ') << i+1;
+        if(ignore_case(v_data[i].label))
+            v_data[i].label = "";
+        if(ignore_case(v_data[i].opcode))
+            v_data[i].opcode = "";
+        if(ignore_case(v_data[i].operand))
+            v_data[i].operand = "";
+        myfile << setw(15) << setfill(' ')  << v_data[i].address;
+        myfile << setw(15) << setfill (' ') << v_data[i].label;
+        myfile << setw(15) << setfill (' ') << v_data[i].opcode;
+        myfile << setw(15) << setfill (' ') << v_data[i].operand << endl;  
+    } 
 }
 
 void sicxe_asm::print_symtab() {
