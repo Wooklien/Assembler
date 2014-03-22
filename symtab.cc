@@ -8,16 +8,16 @@
 
  #include "symtab.h"
 
- void symtab::add(string symbol, int value, bool type) {
+ void symtab::add(string symbol, string value, bool type) {
  	if(!exists(symbol)) {
- 		m[symbol] = pair<int,bool>(value, type);
+ 		m[symbol] = pair<string,bool>(value, type);
  	}
  	else {
  		// Error, symbol is already in map.
  	}
  }
 
- int symtab::get_value(string symbol) {
+ string symtab::get_value(string symbol) {
  	if(exists(symbol)) {
  		m_iter =  m.find(symbol);
 

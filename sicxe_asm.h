@@ -7,6 +7,7 @@
 */
 
  #include <string>
+ #include <iomanip>
  #include <iostream>
  #include <sstream>
  #include "file_parser.cc"
@@ -43,13 +44,14 @@
 	symtab table;
 
 	struct parse_data{
-		int address;
+		string address;
 		string label;
 		string opcode;
 		string operand;
 	};
 
 	parse_data data;
+	string filename;
 
 	map<string,int> asm_dir;
 	map<string,int>::iterator asm_iter;
@@ -67,6 +69,10 @@
  	bool ignore_case(string s);
  	// Changes the string to uppercase.
  	string upper(string s);
+
+ 	void set_file_name(string filename);
+
+ 	string format_string(int x);
  };
 
  #endif

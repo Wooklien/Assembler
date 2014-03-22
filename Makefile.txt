@@ -8,7 +8,7 @@ sicxe_asm:	sicxe_asm.o
 	${CC} ${CCFLAGS} -o sicxe_asm sicxe_asm.o opcodetab.o file_parser.o symtab.o
 
 sicxe_asm.o:	sicxe_asm.cpp sicxe_asm.h opcodetab.o file_parser.o symtab.o 
-		${CC} ${CCFLAGS} -c sicxe_asm.cpp
+		${CC} ${CCFLAGS} -c sicxe_asm.cc
             
 opcodetab.o:	opcodetab.cc opcodetab.h opcode_error_exception.h
 			${CC} ${CCFLAGS} -c opcodetab.cc                    

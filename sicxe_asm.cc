@@ -27,7 +27,7 @@ void sicxe_asm::assign_address(file_parser parser) {
 		data.label = parser.get_token(i,0);
 		data.opcode = parser.get_token(i,1);
 		data.operand = parser.get_token(i,2);
-		data.address = asm_address;
+		data.address = format_string(asm_address);
 
 		if(check_asm_dir(data.opcode)) {
 			int value;
@@ -41,6 +41,12 @@ void sicxe_asm::assign_address(file_parser parser) {
 
 				if(upper(data.opcode) == "RESW" || upper(data.opcode) == "RESB") {
 					asm_address += (size * value);
+				}
+				else if(upper(data.opcode) == "BYTE") {
+					string operand = data.operand;
+					cout << data.operand << endl;
+					cout  << operand.length() << operand << endl;
+					asm_address += ((operand.length()-4)*size);
 				}
 				else{
 					asm_address += size;
@@ -62,6 +68,7 @@ void sicxe_asm::assign_address(file_parser parser) {
 }
 
 void sicxe_asm::first(string filename) {
+	set_file_name(filename);
 	file_parser parser(filename);
 	parser.read_file();
 
@@ -91,34 +98,19 @@ bool sicxe_asm::check_asm_dir(string s) {
 }
 
 int sicxe_asm::int_value(string s) {
-	string operand = s;
-	unsigned int value;
-
-	if(s[0] == '$' || s[0] == '#') {
-		operand.erase(0,1);
-	}
-
-	stringstream str_value;
-	str_value << hex << operand;
-	str_value >> value;
-
+	int value;
+	sscanf(s.c_str(),"%d",&value);
 	return value;
 }
 
 int sicxe_asm::hex_value(string s) {
-	string operand = s;
-	int value;
-
-	if(s[0] == '$' || s[0] == '#') {
-		operand.erase(0,1);
-	}
+	int value = int_value(s);
 
 	stringstream str_value;
-	str_value << operand;
+	str_value << hex << value;
 	str_value >> value;
 
-	return value;
-
+	return value;	
 }
 
 bool sicxe_asm::ignore_case(string s) {
@@ -136,6 +128,19 @@ string sicxe_asm::upper(string s){
   		*iter = std::toupper((unsigned char)*iter);
   	}
 	return tmp;
+}
+
+void sicxe_asm::set_file_name(string filename) {
+ 	this->filename = filename;
+}
+
+string sicxe_asm::format_string(int x) {
+	stringstream tmp;
+	tmp << hex << setw(5) << setfill('0') << x;
+	string xx = tmp.str();
+	stringstream tmmp;
+	tmmp << setw(5) << xx;
+	return upper(tmmp.str());
 }
 
 int main(int argc, char *argv[]) {

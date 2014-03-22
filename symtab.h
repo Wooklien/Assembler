@@ -21,16 +21,16 @@
  public:
  	// Takes a SIC/XE label and adds its value into a map
  	// with the label as the key. Bool type is for relative or absolute.
- 	void add(string symbol, int value, bool type);
+ 	void add(string symbol, string value, bool type);
 
  	// Takes a SIC/XE label as a key and returns its corresponding label.
- 	int get_value(string symbol);
+ 	string get_value(string symbol);
 
  	void print_table();
 
  private:
- 	map<string,pair<int, bool> > m;
- 	map<string,pair<int, bool> >::iterator m_iter;
+ 	map<string,pair<string, bool> > m;
+ 	map<string,pair<string, bool> >::iterator m_iter;
 
  	bool exists(string symbol);
  };
