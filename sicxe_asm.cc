@@ -60,7 +60,7 @@ void sicxe_asm::assign_address(file_parser parser) {
 		}
 
 		if(data.label[0] != '.' && data.label.size() != 0) {
-			table.add(data.label, data.address, false);
+			table.add(data.label, data.address, isAbsolute(data.operand));
 		}
 
 		v_data.push_back(data);
