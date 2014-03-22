@@ -43,6 +43,7 @@
  	int asm_address;
 	opcodetab opcode;
 	symtab table;
+	ofstream myfile;
 
 	struct parse_data{
 		string address;
@@ -72,7 +73,6 @@
  	
  	// Checks if EQU is absolute or relative 
  	bool isAbsolute(string s);
-
 
  	string format_string(int x);
  };
