@@ -24,34 +24,10 @@ sicxe_asm::sicxe_asm() {
 
 void sicxe_asm::assign_address(file_parser parser) {
 	for(int i = 1; i < parser.size(); i++) {
-		data.label = parser.get_token(i,0);
-		data.opcode = parser.get_token(i,1);
-		data.operand = parser.get_token(i,2);
-		data.address = format_string(asm_address);
+		parse_to_struct(parser,i);
 
 		if(check_asm_dir(data.opcode)) {
-			int value;
-			if(upper(data.opcode) == "START") {
-				value = int_value(data.operand); // INT
-				asm_address += value;
-			}
-			else {
-				value = hex_value(data.operand); // HEX
-				int size = asm_dir.find(upper(data.opcode))->second; // Getting Assembly Directive Size.
-
-				if(upper(data.opcode) == "RESW" || upper(data.opcode) == "RESB") {
-					asm_address += (size * value);
-				}
-				else if(upper(data.opcode) == "BYTE") {
-					string operand = data.operand;
-					cout << data.operand << endl;
-					cout  << operand.length() << operand << endl;
-					asm_address += ((operand.length()-4)*size);
-				}
-				else{
-					asm_address += size;
-				}
-			}
+			handle_asm_dir(data.opcode, data.operand);
 		}
 		else {
 			if(!ignore_case(data.opcode)) {
@@ -59,16 +35,57 @@ void sicxe_asm::assign_address(file_parser parser) {
 			}
 		}
 
-		if(data.label[0] != '.' && data.label.size() != 0) {
-			table.add(data.label, data.address, isAbsolute(data.operand));
-		}
+		// Adding user defined labels to symbol tabel.
+		add_symtab(data.address, data.label, data.operand);
 
 		v_data.push_back(data);
 	}
 }
 
+void sicxe_asm::handle_asm_dir(string op, string operand) {
+	int value;
+	string tmp_opcode = upper(op);
+
+	if(tmp_opcode == "START") {
+		value = int_value(operand);
+		asm_address += value;
+	}
+	else {
+		value = hex_value(operand);
+		int size = asm_dir.find(tmp_opcode)->second; // Getting Operation Size.
+
+		if(tmp_opcode == "RESW" || tmp_opcode == "RESB") {
+			asm_address += (size * value);
+		}
+		else if( tmp_opcode == "BYTE") {
+			int length = operand.length() - 3;
+
+			if(operand[0] == 'x' || operand[0] == 'X') {
+				if(length % 2 == 0) {
+					asm_address += ((length/2) * size);
+				}
+				else {
+					// Throw Exception Error: Invalid Operand size.
+				}
+			}
+			else {
+				asm_address += (length * size);
+			}
+		}
+		else {
+			asm_address += size;
+		}
+	}
+}
+
+void sicxe_asm::parse_to_struct(file_parser parser, int index) {
+	data.label = parser.get_token(index,0);
+	data.opcode = parser.get_token(index,1);
+	data.operand = parser.get_token(index,2);
+	data.address = format_string(asm_address);
+}
+
 void sicxe_asm::first(string filename) {
-	set_file_name(filename);
 	file_parser parser(filename);
 	parser.read_file();
 
@@ -76,17 +93,21 @@ void sicxe_asm::first(string filename) {
 }
 
 void sicxe_asm::write_file(string filename) {
-
 	const string columns [] = { "Line#","Address","Label","Opcode","Operand" };
 	const string purdylines [] = { "=====", "=======", "=====", "======", "=======" };
+	
 	filename = filename.substr(0,filename.length()-4) + ".lis";
+	
 	myfile.open(filename.c_str());
+	
 	for (int i = 0; i < 5; i++) 
         myfile << setw(15) << setfill(' ') << columns[i]; 
     myfile << endl;
+    
     for (int i = 0; i < 5; i++)
 	    myfile << setw(15) << setfill(' ') << purdylines[i];
 	myfile << endl;
+	
 	for (int i = 0; i < v_data.size(); i++){
         myfile << setw(15) << setfill(' ') << i+1;
         if(ignore_case(v_data[i].label))
@@ -151,10 +172,6 @@ string sicxe_asm::upper(string s){
 	return tmp;
 }
 
-void sicxe_asm::set_file_name(string filename) {
- 	this->filename = filename;
-}
-
 string sicxe_asm::format_string(int x) {
 	stringstream tmp;
 	tmp << hex << setw(5) << setfill('0') << x;
@@ -164,10 +181,16 @@ string sicxe_asm::format_string(int x) {
 	return upper(tmmp.str());
 }
 
-bool sicxe_asm::isAbsolute(string s){
-    if(s[0] == '#')
-        return true;
-    return false;   
+bool sicxe_asm::isAbsolute(string s) {
+	if(s[0] == '#')
+		return true;
+	return false;
+}
+
+void sicxe_asm::add_symtab(string address, string label, string operand) {
+	if(label[0] != '.' && label.size() != 0) {
+		table.add(label, address, isAbsolute(data.operand));
+	}
 }
 
 int main(int argc, char *argv[]) {
