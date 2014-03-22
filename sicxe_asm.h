@@ -10,6 +10,7 @@
  #include <iomanip>
  #include <iostream>
  #include <sstream>
+ #include <fstrea>
  #include "file_parser.cc"
  #include "file_parse_exception.h"
  #include "opcodetab.cc"
@@ -51,7 +52,6 @@
 	};
 
 	parse_data data;
-	string filename;
 
 	map<string,int> asm_dir;
 	map<string,int>::iterator asm_iter;
@@ -69,8 +69,10 @@
  	bool ignore_case(string s);
  	// Changes the string to uppercase.
  	string upper(string s);
+ 	
+ 	// Checks if EQU is absolute or relative 
+ 	bool isAbsolute(string s);
 
- 	void set_file_name(string filename);
 
  	string format_string(int x);
  };
