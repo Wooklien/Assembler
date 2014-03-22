@@ -98,8 +98,11 @@ bool sicxe_asm::check_asm_dir(string s) {
 }
 
 int sicxe_asm::int_value(string s) {
+	if(s[0] == '$' || s[0] == '#'){
+		s.erase(0,1);
+	}
 	int value;
-	sscanf(s.c_str(),"%d",&value);
+	sscanf(s.c_str(),"%x",&value);
 	return value;
 }
 
