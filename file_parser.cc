@@ -13,6 +13,9 @@ file_parser::file_parser(string s) {
 	num = 0;
 }
 
+file_parser::~file_parser() {
+}
+
 void file_parser::read_file() {
 	ifstream file;
 
@@ -66,6 +69,8 @@ void file_parser::read_file() {
 					if(token[0] != '.'){
 						t_comment += token;
 					}
+
+					t_comment = trim_spaces(t_comment);
 					v.push_back(t_comment); // Push comment to vector. 
 				}
 
@@ -77,6 +82,9 @@ void file_parser::read_file() {
 					if(token[1] != '\''){
 						t_comment += token;
 					}
+
+					t_comment = trim_spaces(t_comment);
+
 					v.push_back(t_comment); // Push comment to vector. 
 				}
 
@@ -156,4 +164,13 @@ void file_parser::reset_data() {
 	data.opcode = "";
 	data.operand = "";
 	data.comments = "";
+}
+
+string file_parser::trim_spaces(string str) {
+	string tmp = "";
+	size_t endpos = str.find_last_not_of("  \t");
+	if(string::npos != endpos) {
+		tmp = str.substr(0, endpos+1);
+	}
+	return tmp;
 }
