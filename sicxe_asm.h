@@ -10,6 +10,7 @@
  #include <iomanip>
  #include <iostream>
  #include <sstream>
+ #include <fstream>
  #include <fstrea>
  #include "file_parser.cc"
  #include "file_parse_exception.h"
