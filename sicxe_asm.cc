@@ -164,6 +164,12 @@ string sicxe_asm::format_string(int x) {
 	return upper(tmmp.str());
 }
 
+bool sicxe_asm::isAbsolute(string s){
+    if(s[0] == '#')
+        return true;
+    return false;   
+}
+
 int main(int argc, char *argv[]) {
 	int address = 0;
  	if(argc != 2) {
