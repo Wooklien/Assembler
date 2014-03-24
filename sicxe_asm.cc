@@ -65,7 +65,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand) {
 					asm_address += ((length/2) * size);
 				}
 				else {
-					// Throw Exception Error: Invalid Operand size.
+					throw symtab_exception("Invalid operand size.");
 				}
 			}
 			else {
@@ -196,7 +196,7 @@ void sicxe_asm::add_symtab(string address, string label, string operand) {
 int main(int argc, char *argv[]) {
 	int address = 0;
  	if(argc != 2) {
- 		//throw error: file not found.
+ 		throw symtab_exception("File not found.");
  	}
  	string file = argv[1];
 
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
  		assembler.print_symtab();
  	}
  	catch(exception& excpt) {
- 		cout << "ERROR" << excpt.what() << endl;
+ 		cout << "ERROR " << excpt.getMessage() << endl;
  	}
  	return 0;
  }
