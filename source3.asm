@@ -5,7 +5,7 @@
 prog    start   $1000    .start of sample program
 bsrch   EQU     14
 OFFB    EQU     8 
-        BASE    delta
+        BASE  delta
         LDB     #delta
         lds     #3
         +ldx     @foo
@@ -23,7 +23,7 @@ first   NORM
         shiftr  T,2
         shiftl  S,1
         tixr    T
-        j       first
+        end     first
         +j      first
         Clear   T
         +ldt    #50000	

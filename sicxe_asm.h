@@ -53,6 +53,8 @@
 	vector<parse_data>::iterator v_iter;
 
 	// MAIN FUNCTIONS //
+	// Initialize assembly directives.
+	void init_asm();
 	// First pass of the assembler. 
  	void first(string filename);
  	// Write to file.

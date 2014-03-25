@@ -13,7 +13,7 @@
  		m[symbol] = pair<string,bool>(value, type);
  	}
  	else {
- 		// Error, symbol is already in map.
+ 		throw symtab_exception("Symbol already defined in map.");
  	}
  }
 

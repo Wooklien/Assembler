@@ -12,15 +12,7 @@ sicxe_asm::sicxe_asm(string filename) {
 	asm_address = 0x00000000;
 	base = -1;
 
-	asm_dir["START"] = 0;
-	asm_dir["END"] = 0;
-	asm_dir["BYTE"] = 1;
-	asm_dir["WORD"] = 3;
-	asm_dir["RESB"] = 1;
-	asm_dir["RESW"] = 3;
-	asm_dir["BASE"] = 0;
-	asm_dir["NOBASE"] = 0;
-	asm_dir["EQU"] = 0;
+	init_asm();
 
 	first(filename);
 	write_file(filename);
@@ -32,11 +24,11 @@ void sicxe_asm::assign_address(file_parser parser) {
 		parse_to_struct(parser,i);
 
 		if(check_asm_dir(data.opcode)) {
-			if(upper(data.opcode) == "END") {
-				break;
+			if(!(upper(data.opcode) == "END")) {
+				handle_asm_dir(data.opcode, data.operand);
 			}
 			else {
-				handle_asm_dir(data.opcode, data.operand);
+				break;
 			}
 		}
 		else {
@@ -64,9 +56,12 @@ void sicxe_asm::handle_asm_dir(string op, string operand) {
 			// throw errorrrrr.	
 		}
 	}
-	else if(upper(op) == "BASE") {
+	else if(tmp_opcode == "BASE") {
 		base_operand = operand;
 		base = 1;
+	}
+	else if(tmp_opcode == "NOBASE") {
+		base = -1;
 	}
 	else {
 		value = hex_value(operand);
@@ -96,6 +91,18 @@ void sicxe_asm::handle_asm_dir(string op, string operand) {
 	}
 }
 
+void sicxe_asm::init_asm() {
+	asm_dir["START"] = 0;
+	asm_dir["END"] = 0;
+	asm_dir["BYTE"] = 1;
+	asm_dir["WORD"] = 3;
+	asm_dir["RESB"] = 1;
+	asm_dir["RESW"] = 3;
+	asm_dir["BASE"] = 0;
+	asm_dir["NOBASE"] = 0;
+	asm_dir["EQU"] = 0;
+}
+
 void sicxe_asm::parse_to_struct(file_parser parser, int index) {
 	data.label = parser.get_token(index,0);
 	data.opcode = parser.get_token(index,1);
@@ -110,7 +117,6 @@ void sicxe_asm::first(string filename) {
 
 	if(base != -1) {
 		base_operand = table.get_value(base_operand);
-		cout << base_operand << endl;
 	}
 }
 
@@ -234,7 +240,19 @@ int main(int argc, char *argv[]) {
  		sicxe_asm assembler(file);
  	}
  	catch(exception& excpt) {
- 		cout << "ERROR" << excpt.what() << endl;
+ 		cout << "ERROR " << excpt.what() << endl;
+ 	}
+ 	catch(opcode_error_exception ox) {
+ 		cout << "Opcode error has occured: " << ox.getMessage() << endl;
+ 	}
+ 	catch(file_parse_exception fx) {
+ 		cout << "File parse exception has occured: " << fx.getMessage() << endl;
+ 	}
+ 	catch(symtab_exception sx) {
+ 		cout << "Symtab exception has occured: " << sx.getMessage() << endl;
+ 	}
+ 	catch(...) {
+ 		cout << "Uknown failure occured." << endl;
  	}
  	return 0;
  }
