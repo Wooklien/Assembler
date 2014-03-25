@@ -27,18 +27,12 @@
  public:
 
  	// Default Constructor.
- 	sicxe_asm();
-
- 	//MAIN PUBLIC CLASS FUNCTIONS//
- 	// First pass of the assembler. 
- 	void first(string filename);
- 	// Write to file.
- 	void write_file(string filename);
- 	// Print Symbol table.
- 	void print_symtab();
+ 	sicxe_asm(string filename);
 
  private:
  	int asm_address;
+ 	int base;
+ 	string base_operand;
 	opcodetab opcode;
 	symtab table;
 	ofstream myfile;
@@ -59,6 +53,12 @@
 	vector<parse_data>::iterator v_iter;
 
 	// MAIN FUNCTIONS //
+	// First pass of the assembler. 
+ 	void first(string filename);
+ 	// Write to file.
+ 	void write_file(string filename);
+ 	// Print Symbol table.
+ 	void print_symtab();
 	// Add user defined labels and addresses to symtab.
 	void add_symtab(string address, string label, string operand);
  	// Assign address to each line of code.

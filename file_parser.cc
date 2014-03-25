@@ -89,7 +89,7 @@ void file_parser::read_file() {
 				}
 
 				else if(token.size() != 0 && (t_comment[0] != '.' || t_comment[1] != '\'')) {
-					v.push_back(token);
+					v.push_back(trim_spaces(token));
 				}
 			}
 

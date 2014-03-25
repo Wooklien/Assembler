@@ -23,7 +23,7 @@
  	// with the label as the key. Bool type is for relative or absolute.
  	void add(string symbol, string value, bool type);
 
- 	// Takes a SIC/XE label as a key and returns its corresponding label.
+ 	// Takes a SIC/XE label as a key and returns its corresponding value.
  	string get_value(string symbol);
 
  	void print_table();
