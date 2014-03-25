@@ -240,7 +240,7 @@ int main(int argc, char *argv[]) {
  		sicxe_asm assembler(file);
  	}
  	catch(exception& excpt) {
- 		cout << "ERROR " << excpt.what() << endl;
+ 		cout << "An Error has occured: " << excpt.what() << endl;
  	}
  	catch(opcode_error_exception ox) {
  		cout << "Opcode error has occured: " << ox.getMessage() << endl;
