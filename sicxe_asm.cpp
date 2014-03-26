@@ -50,52 +50,51 @@ void sicxe_asm::assign_address(file_parser parser) {
 void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 	int value;
 	string tmp_opcode = upper(op);
-
-	if(tmp_opcode == "START") {
-		if(!(operand[0] == '#')) {
+	if(operand[0] == '@' || operand[0] == '#' || operand[1] == '@' || operand[1] == '#') {
+        	ss << "Error on line: " << index << ". Addressing modes do not apply to assembly directives.";
+        	throw symtab_exception(ss.str());
+    	}
+    	else{
+		if(tmp_opcode == "START") {
 			start = 1;
 			value = int_value(operand, index);
 			asm_address = value;
 		}
+		else if(tmp_opcode == "BASE") {
+			base_operand = operand;
+			base = 1;
+		}
+		else if(tmp_opcode == "NOBASE") {
+			base = -1;
+		}
 		else {
-			ss << "Error on line: " << index << ". START directive does not have an addressing mode.";
-			throw symtab_exception(ss.str());
-		}
-	}
-	else if(tmp_opcode == "BASE") {
-		base_operand = operand;
-		base = 1;
-	}
-	else if(tmp_opcode == "NOBASE") {
-		base = -1;
-	}
-	else {
-		value = hex_value(operand, index);
-		int size = asm_dir.find(tmp_opcode)->second; // Getting Operation Size.
-
-		if(tmp_opcode == "RESW" || tmp_opcode == "RESB") {
-			asm_address += (size * value);
-		}
-		else if( tmp_opcode == "BYTE") {
-			int length = operand.length() - 3;
-
-			if(operand[0] == 'x' || operand[0] == 'X') {
-				if(length % 2 == 0) {
-					asm_address += ((length/2) * size);
+			value = hex_value(operand, index);
+			int size = asm_dir.find(tmp_opcode)->second; // Getting Operation Size.
+	
+			if(tmp_opcode == "RESW" || tmp_opcode == "RESB") {
+				asm_address += (size * value);
+			}
+			else if( tmp_opcode == "BYTE") {
+				int length = operand.length() - 3;
+	
+				if(operand[0] == 'x' || operand[0] == 'X') {
+					if(length % 2 == 0) {
+						asm_address += ((length/2) * size);
+					}
+					else {
+						ss << "Error on line: " << index << ". Invalid operand size. Hex value should be even.";
+						throw symtab_exception(ss.str());
+					}
 				}
 				else {
-					ss << "Error on line: " << index << ". Invalid operand size. Hex value should be even.";
-					throw symtab_exception(ss.str());
+					asm_address += (length * size);
 				}
 			}
 			else {
-				asm_address += (length * size);
+				asm_address += size;
 			}
 		}
-		else {
-			asm_address += size;
-		}
-	}
+    	}
 }
 
 void sicxe_asm::init_asm() {
