@@ -1,4 +1,4 @@
-/* sicxe_asm.cc
+/* sicxe_asm.cpp
  * TEAM TEXAS
  * Quoc Lien, Jose Paterno, Jessica To, Bryant To.
  * masc1216
