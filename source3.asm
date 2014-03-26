@@ -23,7 +23,7 @@ first   NORM
         shiftr  T,2
         shiftl  S,1
         tixr    T
-        end     first
+        j       first
         +j      first
         Clear   T
         +ldt    #50000	

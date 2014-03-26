@@ -33,6 +33,7 @@
  	int asm_address;
  	int base;
  	string base_operand;
+ 	stringstream ss;
 	opcodetab opcode;
 	symtab table;
 	ofstream myfile;
@@ -66,7 +67,7 @@
  	// Assign address to each line of code.
  	void assign_address(file_parser parser);
  	// Handling assembly directives. Indexing address by functions of assembly directives.
- 	void handle_asm_dir(string op, string operand);
+ 	void handle_asm_dir(string op, string operand, int index);
  	// Parsing data into data structure.
  	void parse_to_struct(file_parser parser, int index);
 
@@ -74,9 +75,9 @@
 	// Check assembler directive.
  	bool check_asm_dir(string s);
  	// Returns the int value of the string.
- 	int int_value(string s);
+ 	int int_value(string s, int index);
  	// Returns the hex value of the string.
- 	int hex_value(string s);
+ 	int hex_value(string s, int index);
  	// Ignores cases of comments and empty strings.
  	bool ignore_case(string s);
  	// Changes the string to uppercase.
