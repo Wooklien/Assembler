@@ -32,6 +32,7 @@
  private:
  	int asm_address;
  	int base;
+ 	int start;
  	string base_operand;
  	stringstream ss;
 	opcodetab opcode;

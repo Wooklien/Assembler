@@ -11,6 +11,7 @@
 sicxe_asm::sicxe_asm(string filename) {
 	asm_address = 0x00000000;
 	base = -1;
+	start = -1;
 
 	init_asm();
 
@@ -31,8 +32,12 @@ void sicxe_asm::assign_address(file_parser parser) {
 			}
 		}
 		else {
-			if(!ignore_case(data.opcode)) {
+			if(!ignore_case(data.opcode) && start != -1) {
 				asm_address += opcode.get_instruction_size(data.opcode);
+			}
+			else if(!ignore_case(data.opcode) && start == -1) {
+				ss << "Error on line: " << i << ". Invalid operation! Opcode operation before Start.";
+				throw symtab_exception(ss.str());
 			}
 		}
 		// Adding user defined labels to symbol tabel.
@@ -48,6 +53,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 
 	if(tmp_opcode == "START") {
 		if(!(operand[0] == '#')) {
+			start = 1;
 			value = int_value(operand, index);
 			asm_address = value;
 		}
