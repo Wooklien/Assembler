@@ -1,4 +1,4 @@
-/* symtab.h
+/* symtab.cc
  * TEAM TEXAS
  * Quoc Lien, Jose Paterno, Jessica To, Bryant To.
  * masc1216
