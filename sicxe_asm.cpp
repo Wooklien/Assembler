@@ -16,7 +16,6 @@ sicxe_asm::sicxe_asm(string filename) {
 
 	first(filename);
 	write_file(filename);
-	print_symtab();
 }
 
 void sicxe_asm::assign_address(file_parser parser) {
