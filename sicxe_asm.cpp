@@ -32,6 +32,12 @@ void sicxe_asm::assign_address(file_parser parser) {
 			}
 		}
 		else {
+			if (data.operand[1] == '#'){
+                		string s = static_cast<ostringstream*>(&(ostringstream()<<i))->str();
+						throw symtab_exception("Error on line: "+s+". Invalid operand." );
+            		}
+		
+		
 			if(!ignore_case(data.opcode) && start != -1) {
 				asm_address += opcode.get_instruction_size(data.opcode);
 			}
@@ -239,9 +245,7 @@ void sicxe_asm::add_symtab(string address, string label, string operand) {
 
 int main(int argc, char *argv[]) {
 	int address = 0;
- 	if(argc != 2) {
- 		//throw error: file not found.
- 	}
+ 
  	string file = argv[1];
 
  	try {
