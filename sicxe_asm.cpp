@@ -146,7 +146,7 @@ void sicxe_asm::write_file(string filename) {
 	    myfile << setw(15) << setfill(' ') << purdylines[i];
 	myfile << endl;
 	
-	for (int i = 0; i < v_data.size(); i++){
+	for (unsigned int i = 0; i < v_data.size(); i++){
         myfile << setw(15) << setfill(' ') << i+1;
         if(ignore_case(v_data[i].label))
             v_data[i].label = "";

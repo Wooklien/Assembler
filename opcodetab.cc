@@ -59,7 +59,7 @@ int opcodetab::get_instruction_size(string opcode){
 	}
 	else {
         	srand( time(0)+rand() );
-		throw opcode_error_exception(LULZ_ERRS[rand()%6]);
+		throw opcode_error_exception(opcode + " " +LULZ_ERRS[rand()%6]);
 	}
 }
 

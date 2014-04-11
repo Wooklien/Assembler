@@ -41,6 +41,17 @@ void file_parser::read_file() {
 			data.label = line;
 		}
 		else {
+
+			size_t found = line.find('\t');
+			
+			if(found !=string::npos) {
+				for(string::iterator iter = line.begin(); iter != line.end(); ++iter) {
+					if(*iter == '\t') {
+						*iter = ' ';
+					}
+				}
+			}
+
 			stringstream s_string(line);
 			string t_comment = "";
 
@@ -53,13 +64,8 @@ void file_parser::read_file() {
 			}
 
 			while(!s_string.eof()) {
-				size_t found = line.find(' ');
-				if(found !=string::npos) {
-					getline(s_string, token, ' '); // Handles Tab Characters.
-				}
-				else {
-					getline(s_string, token, '\t'); // Handles Whitespace Characters.
-				}
+
+				getline(s_string, token, ' '); // Handles Tab Characters.
 
 				// Checks for '.' and if it is the rest of the line is a comment. 
 				if(token[0] == '.') {

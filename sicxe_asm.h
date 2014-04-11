@@ -6,20 +6,20 @@
  * CS530, Spring 2014
 */
 
+ #ifndef SICXE_ASM_
+ #define SICXE_ASM_
+
  #include <string>
  #include <iomanip>
  #include <iostream>
  #include <fstream>
  #include <sstream>
- #include "file_parser.cc"
+ #include "file_parser.h"
  #include "file_parse_exception.h"
- #include "opcodetab.cc"
+ #include "opcodetab.h"
  #include "opcode_error_exception.h"
- #include "symtab.cc"
+ #include "symtab.h"
  #include "symtab_exception.h"
-
- #ifndef SICXE_ASM_
- #define SICXE_ASM_
 
  using namespace std;
 
