@@ -25,7 +25,7 @@ first   NORM
         tixr    T
         j       first
         +j      first
-        Clear   T
+        WORLD!!!   T
         +ldt    #50000	
         ldx     #0
         jsub    first

@@ -65,7 +65,7 @@ void file_parser::read_file() {
 
 			while(!s_string.eof()) {
 
-				getline(s_string, token, ' '); // Handles Tab Characters.
+				getline(s_string, token, ' '); // Handles space Characters.
 
 				// Checks for '.' and if it is the rest of the line is a comment. 
 				if(token[0] == '.') {

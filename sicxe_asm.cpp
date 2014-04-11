@@ -28,6 +28,7 @@ void sicxe_asm::assign_address(file_parser parser) {
 				handle_asm_dir(data.opcode, data.operand, i);
 			}
 			else {
+				v_data.push_back(data);
 				break;
 			}
 		}
@@ -37,7 +38,12 @@ void sicxe_asm::assign_address(file_parser parser) {
                 throw symtab_exception(ss.str());
             }
 			if(!ignore_case(data.opcode) && start != -1) {
-				asm_address += opcode.get_instruction_size(data.opcode);
+				try {
+					asm_address += opcode.get_instruction_size(data.opcode);
+				}
+				catch(opcode_error_exception ox) {
+					cerr << "An Opcode error has occured at line " << i  << ": " << ox.getMessage() << endl;
+				}
 			}
 			else if(!ignore_case(data.opcode) && start == -1) {
 				ss << "Error on line: " << i << ". Invalid operation! Opcode operation before Start.";
@@ -98,7 +104,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 				asm_address += size;
 			}
 		}
-    	}
+    }
 }
 
 void sicxe_asm::init_asm() {
