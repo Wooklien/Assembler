@@ -13,9 +13,10 @@ sicxe_asm::sicxe_asm(string filename) {
 	base = -1;
 	start = -1;
 
-	init_asm();
+	init();
 
 	first(filename);
+	second();
 	write_file(filename);
 }
 
@@ -67,8 +68,13 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
     	else{
 		if(tmp_opcode == "START") {
 			start = 1;
-			value = int_value(operand, index);
-			asm_address = value;
+			if(operand[0] == '@') {
+				// throw error.
+			}
+			else {
+				value = int_value(operand, index);
+				asm_address = value;
+			}
 		}
 		else if(tmp_opcode == "BASE") {
 			base_operand = operand;
@@ -78,7 +84,15 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 			base = -1;
 		}
 		else {
-			value = hex_value(operand, index);
+			start = 1;
+
+			if(operand[0] == '@') {
+				// throw error.
+			}
+			else {
+				value = hex_value(operand, index);
+			}
+
 			int size = asm_dir.find(tmp_opcode)->second; // Getting Operation Size.
 	
 			if(tmp_opcode == "RESW" || tmp_opcode == "RESB") {
@@ -107,7 +121,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
     }
 }
 
-void sicxe_asm::init_asm() {
+void sicxe_asm::init() {
 	asm_dir["START"] = 0;
 	asm_dir["END"] = 0;
 	asm_dir["BYTE"] = 1;
@@ -117,6 +131,15 @@ void sicxe_asm::init_asm() {
 	asm_dir["BASE"] = 0;
 	asm_dir["NOBASE"] = 0;
 	asm_dir["EQU"] = 0;
+
+	reg["A"] = "0"; 
+	reg["X"] = "1";
+	reg["L"] = "2";
+	reg["B"] = "3";
+	reg["S"] = "4";
+	reg["T"] = "5";
+	reg["PC"] = "8";
+	reg["SW"] = "9";
 }
 
 void sicxe_asm::parse_to_struct(file_parser parser, int index) {
@@ -131,9 +154,6 @@ void sicxe_asm::first(string filename) {
 	parser.read_file();
 	assign_address(parser);
 
-	if(base != -1) {
-		base_operand = table.get_value(base_operand);
-	}
 }
 
 void sicxe_asm::write_file(string filename) {
@@ -181,13 +201,10 @@ bool sicxe_asm::check_asm_dir(string s) {
 }
 
 int sicxe_asm::int_value(string s, int index) {
-	if(s[0] == '$' || s[0] == '#'){
+	if(s[0] == '$' || s[0] == '#' || s[0] == '@') {
 		s.erase(0,1);
 	}
-	else if(s[0] == '@') {
-		ss << "Error on line: " << index << ". Invalid indirect addressing with constants.";
-		throw symtab_exception(ss.str());
-	}
+
 	int value;
 	sscanf(s.c_str(),"%x",&value);
 	return value;
@@ -195,12 +212,8 @@ int sicxe_asm::int_value(string s, int index) {
 
 int sicxe_asm::hex_value(string s, int index) {
 	int value;
-	if(s[0] == '$' || s[0] == '#'){
+	if(s[0] == '$' || s[0] == '#' || s[0] == '@') {
 		s.erase(0,1);
-	}
-	else if(s[0] == '@') {
-		ss << "Error on line: " << index << ". Invalid indirect addressing with constants.";
-		throw symtab_exception(ss.str());
 	}
 
  	stringstream str_value;
@@ -247,6 +260,142 @@ void sicxe_asm::add_symtab(string address, string label, string operand) {
 	}
 }
 
+// 2nd Pass Functions //
+void sicxe_asm::second() {
+	for(unsigned int i = 1; i < v_data.size(); i++) {
+		if(!check_asm_dir(v_data[i].opcode) && v_data[i].opcode.length() != 0) {
+			if(opcode.get_instruction_size(v_data[i].opcode) == 1) {
+				cout << opcode.get_machine_code(v_data[i].opcode) << endl;
+			}
+			if(opcode.get_instruction_size(v_data[i].opcode) == 2) {
+				cout << format_two(v_data[i].opcode,"S","T") << endl;
+			}
+
+			if(opcode.get_instruction_size(v_data[i].opcode) == 3) {
+				cout << assign_mach_code("LDA", "alpha") << int_to_hex(get_offset("alpha","0000B",i), 3) << endl;
+			}
+		}
+	}
+}
+
+int sicxe_asm::get_offset(string label, int index) {
+	string tmp_base_address = table.get_value(base_operand);
+	string tmp_label_address = table.get_value(label);
+
+	int base_ddress = int_value(tmp_base_address, index);
+	int label_address = int_value(tmp_label_address, index);
+
+	return label_address - base_ddress;
+}
+
+int sicxe_asm::get_offset(string label, string pc_counter, int index) {
+	string label_address = table.get_value(label);
+	
+	int tmp = int_value(label_address, index);
+	int tmp_pc = int_value(pc_counter, index);
+
+	return tmp - (tmp_pc + 3);
+}
+
+string sicxe_asm::format_two(string op, string r1, string r2) {
+	string tmp = opcode.get_machine_code(op);
+	string tmp2 = tmp + get_reg_value(r1) + get_reg_value(r2);
+	return tmp2; 
+}
+
+string sicxe_asm::get_reg_value(string r) {
+	if(reg.find(r) != reg.end()) {
+		reg_iter = reg.find(r);
+		return reg_iter->second;
+	}
+	else {
+		throw symtab_exception("INVALID REGISTER.");
+	}
+}
+
+bool sicxe_asm::is_format4(string opcode){
+	if(opcode.find('+') != string::npos){
+		//cout<<"is format4"<<endl;
+		return true;
+	}
+	else{return false;}
+}
+
+int sicxe_asm::set_ni_bit(string operand) {
+	if(operand.find('#') != string::npos) {
+		return 1;
+	}
+	else if(operand.find('@') != string::npos) {
+		return 2;
+	}
+	else{
+		return 3;
+	}
+
+}
+
+int sicxe_asm::set_xbpe_bit(string opcode,string operand,int base){
+
+	int ni_bit = set_ni_bit(operand);
+	//cout<<ni_bit<<endl;
+	bool x_in_operand = (operand.find(",x") != string::npos);
+
+	if(is_format4(opcode)){
+		base = -1;
+	}
+
+	
+	//if(is_constant(opcode,operand)){
+	//	return 0;
+	//}
+	if(!x_in_operand && is_format4(opcode)){
+		return 1;
+	}
+	else if(!x_in_operand && base == -1){
+		return 2;
+	}
+	else if(!x_in_operand && base != -1){
+		return 4;
+	}
+	else if(x_in_operand && base != -1){
+		return 12;
+	}
+	else if(x_in_operand && is_format4(opcode)){		
+		return 9;
+	}
+	else if(base == -1 && x_in_operand && ni_bit == 3){
+		return 10;
+	}
+	else{
+		return 8;
+	}
+}
+
+string sicxe_asm::assign_mach_code(string op,  string operand){	
+		string mach_opcode = opcode.get_machine_code(op);
+		string mach_code = "";
+		
+		mach_code = mach_opcode[0];
+		int second_half_byte = set_ni_bit(operand) + hex_to_int(mach_opcode.substr(1,1));
+		mach_code.append(int_to_hex(second_half_byte,1));
+		mach_code.append(int_to_hex(set_xbpe_bit(op,operand,base),1));
+		
+		return mach_code;
+}
+
+int sicxe_asm::hex_to_int(string s){
+	int value;
+	sscanf(s.c_str(),"%x",&value);
+	return value;
+}
+
+string sicxe_asm::int_to_hex(int num,int width){
+	stringstream out;
+	out<<setw(width)<<setfill('0')<<hex<<num;
+	//return out.str();
+	return upper(out.str());
+}
+
 int main(int argc, char *argv[]) {
  	string file = argv[1];
 
@@ -269,4 +418,4 @@ int main(int argc, char *argv[]) {
  		cerr << "Uknown failure occured." << endl;
  	}
  	return 0;
- }
+}

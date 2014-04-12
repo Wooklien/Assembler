@@ -51,12 +51,15 @@
 	map<string,int> asm_dir;
 	map<string,int>::iterator asm_iter;
 
+	map<string,string> reg;
+	map<string,string>::iterator reg_iter;
+
 	vector<parse_data> v_data;
 	vector<parse_data>::iterator v_iter;
 
 	// MAIN FUNCTIONS //
-	// Initialize assembly directives.
-	void init_asm();
+	// Initialize Data Structures.
+	void init();
 	// First pass of the assembler. 
  	void first(string filename);
  	// Write to file.
@@ -87,6 +90,21 @@
  	string format_string(int x);
  	// Checks if EQU is absolute or relative 
  	bool isAbsolute(string s);
+
+ 	// 2nd PASS FUNCTIONS //
+ 	void second();
+ 	int get_offset(string label, int base);
+ 	int get_offset(string label, string pc_counter, int index);
+
+ 	string format_two(string opcode, string r1, string r2);
+ 	string get_reg_value(string r);
+
+ 	int set_ni_bit(string operand);
+	int set_xbpe_bit(string opcode,string operand,int base);
+	int hex_to_int(string s);
+	string int_to_hex(int num,int width);
+	bool is_format4(string opcode);
+	string assign_mach_code(string op, string operand);
  };
 
  #endif
