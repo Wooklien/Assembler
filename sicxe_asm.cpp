@@ -72,7 +72,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 				// throw error.
 			}
 			else {
-				value = int_value(operand, index);
+				value = int_value(operand);
 				asm_address = value;
 			}
 		}
@@ -90,7 +90,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 				// throw error.
 			}
 			else {
-				value = hex_value(operand, index);
+				value = hex_value(operand);
 			}
 
 			int size = asm_dir.find(tmp_opcode)->second; // Getting Operation Size.
@@ -200,7 +200,7 @@ bool sicxe_asm::check_asm_dir(string s) {
 	return true;
 }
 
-int sicxe_asm::int_value(string s, int index) {
+int sicxe_asm::int_value(string s) {
 	if(s[0] == '$' || s[0] == '#' || s[0] == '@') {
 		s.erase(0,1);
 	}
@@ -210,7 +210,7 @@ int sicxe_asm::int_value(string s, int index) {
 	return value;
 }
 
-int sicxe_asm::hex_value(string s, int index) {
+int sicxe_asm::hex_value(string s) {
 	int value;
 	if(s[0] == '$' || s[0] == '#' || s[0] == '@') {
 		s.erase(0,1);
@@ -261,29 +261,90 @@ void sicxe_asm::add_symtab(string address, string label, string operand) {
 }
 
 // 2nd Pass Functions //
+// Main Functions //
 void sicxe_asm::second() {
 	for(unsigned int i = 1; i < v_data.size(); i++) {
-		if(!check_asm_dir(v_data[i].opcode) && v_data[i].opcode.length() != 0) {
-			if(opcode.get_instruction_size(v_data[i].opcode) == 1) {
-				cout << opcode.get_machine_code(v_data[i].opcode) << endl;
-			}
-			if(opcode.get_instruction_size(v_data[i].opcode) == 2) {
-				cout << format_two(v_data[i].opcode,"S","T") << endl;
-			}
+		try {
+			if(!check_asm_dir(v_data[i].opcode) && v_data[i].opcode.length() != 0) {
+				int size = opcode.get_instruction_size(v_data[i].opcode);
 
-			if(opcode.get_instruction_size(v_data[i].opcode) == 3) {
-				cout << assign_mach_code("LDA", "alpha") << int_to_hex(get_offset("alpha","0000B",i), 3) << endl;
+				if(size == 1) {
+					cout << opcode.get_machine_code(v_data[i].opcode) << endl;
+				}
+				if(size == 2) {
+					cout << format_two(v_data[i].opcode, v_data[i].operand) << endl;
+				}
+
+				if(size == 3) {
+
+				}
+
+				if(size == 4) {
+					string machine_code = get_mach_code(v_data[i].opcode, v_data[i].operand);
+					string address = table.get_value(v_data[i].operand);
+					machine_code = machine_code + address;
+					cout << machine_code << endl;
+				}
 			}
 		}
+		catch(opcode_error_exception oe) {
+			// Throw Error
+		}
 	}
+}
+
+string sicxe_asm::get_mach_code(string op,  string operand){	
+	string mach_opcode = opcode.get_machine_code(op);
+	string mach_code = "";
+		
+	mach_code = mach_opcode[0];
+	int second_half_byte = set_ni_bit(operand) + int_value(mach_opcode.substr(1,1));
+	mach_code.append(int_to_hex(second_half_byte,1));
+	mach_code.append(int_to_hex(set_xbpe_bit(op,operand,base),1));
+		
+	return mach_code;
+}
+
+string sicxe_asm::format_two(string op, string operand) {
+	string machine_code = opcode.get_machine_code(op);
+	stringstream str(operand);
+	string register_one = "0";
+	string register_two = "0";
+
+	getline(str, register_one, ',');
+	getline(str, register_two);
+
+	if(op == "SVC") {
+		machine_code = machine_code + register_one;
+	}
+	else {
+		if(check_register(register_one)) {
+			register_one = get_reg_value(register_one);
+		}
+		if(check_register(register_two)) {
+			register_two = get_reg_value(register_two);
+		}
+		machine_code = machine_code + register_one + register_two;
+	}
+
+	return machine_code;
+
+}
+
+// SUPPORTING FUNCTIONS //
+string sicxe_asm::int_to_hex(int num,int width){
+	stringstream out;
+	out<<setw(width)<<setfill('0')<<hex<<num;
+	//return out.str();
+	return upper(out.str());
 }
 
 int sicxe_asm::get_offset(string label, int index) {
 	string tmp_base_address = table.get_value(base_operand);
 	string tmp_label_address = table.get_value(label);
 
-	int base_ddress = int_value(tmp_base_address, index);
-	int label_address = int_value(tmp_label_address, index);
+	int base_ddress = int_value(tmp_base_address);
+	int label_address = int_value(tmp_label_address);
 
 	return label_address - base_ddress;
 }
@@ -291,21 +352,23 @@ int sicxe_asm::get_offset(string label, int index) {
 int sicxe_asm::get_offset(string label, string pc_counter, int index) {
 	string label_address = table.get_value(label);
 	
-	int tmp = int_value(label_address, index);
-	int tmp_pc = int_value(pc_counter, index);
+	int tmp = int_value(label_address);
+	int tmp_pc = int_value(pc_counter);
 
 	return tmp - (tmp_pc + 3);
 }
-
-string sicxe_asm::format_two(string op, string r1, string r2) {
-	string tmp = opcode.get_machine_code(op);
-	string tmp2 = tmp + get_reg_value(r1) + get_reg_value(r2);
-	return tmp2; 
+bool sicxe_asm::check_register(string r) {
+	string rgstr = upper(r);
+	if(reg.find(rgstr) != reg.end()) {
+		return true;
+	}
+	return false;
 }
 
 string sicxe_asm::get_reg_value(string r) {
-	if(reg.find(r) != reg.end()) {
-		reg_iter = reg.find(r);
+	string rgstr = upper(r);
+	if(reg.find(rgstr) != reg.end()) {
+		reg_iter = reg.find(rgstr);
 		return reg_iter->second;
 	}
 	else {
@@ -369,31 +432,6 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand,int base){
 	else{
 		return 8;
 	}
-}
-
-string sicxe_asm::assign_mach_code(string op,  string operand){	
-		string mach_opcode = opcode.get_machine_code(op);
-		string mach_code = "";
-		
-		mach_code = mach_opcode[0];
-		int second_half_byte = set_ni_bit(operand) + hex_to_int(mach_opcode.substr(1,1));
-		mach_code.append(int_to_hex(second_half_byte,1));
-		mach_code.append(int_to_hex(set_xbpe_bit(op,operand,base),1));
-		
-		return mach_code;
-}
-
-int sicxe_asm::hex_to_int(string s){
-	int value;
-	sscanf(s.c_str(),"%x",&value);
-	return value;
-}
-
-string sicxe_asm::int_to_hex(int num,int width){
-	stringstream out;
-	out<<setw(width)<<setfill('0')<<hex<<num;
-	//return out.str();
-	return upper(out.str());
 }
 
 int main(int argc, char *argv[]) {

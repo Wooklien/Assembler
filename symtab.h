@@ -9,6 +9,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <sstream>
 #include <utility>
 #include "symtab_exception.h"
 

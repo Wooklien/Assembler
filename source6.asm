@@ -34,7 +34,7 @@ addl    lda     alpha,x   .loop control
         sta     gamma,x     . extra space for testing                                
         addr    s,t
         compr   x,t
-        +jlt     addl
+        +jlt    addl
         jlt     addl
         rsub  
         

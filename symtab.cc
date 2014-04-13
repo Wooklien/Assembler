@@ -18,9 +18,27 @@
  }
 
  string symtab::get_value(string symbol) {
- 	if(exists(symbol)) {
- 		m_iter =  m.find(symbol);
+ 	string temp = symbol;
 
+ 	if(temp.find(',')) {
+ 		stringstream str(temp);
+ 		getline(str,temp,',');
+ 	}
+
+ 	if(temp[0] == '#' || temp[0] == '@') {
+ 		temp.erase(0,1);
+
+ 		if(exists(temp)) {
+ 			m_iter =  m.find(temp);
+
+ 			return m_iter->second.first;
+ 		}
+ 		else {
+ 			return temp;
+ 		}
+ 	}
+
+ 	if(exists(temp)) {
  		return m_iter->second.first;
  	}
  	else {

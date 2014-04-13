@@ -79,9 +79,9 @@
 	// Check assembler directive.
  	bool check_asm_dir(string s);
  	// Returns the int value of the string.
- 	int int_value(string s, int index);
+ 	int int_value(string s);
  	// Returns the hex value of the string.
- 	int hex_value(string s, int index);
+ 	int hex_value(string s);
  	// Ignores cases of comments and empty strings.
  	bool ignore_case(string s);
  	// Changes the string to uppercase.
@@ -92,19 +92,20 @@
  	bool isAbsolute(string s);
 
  	// 2nd PASS FUNCTIONS //
+ 	// Main Functions //
  	void second();
+ 	string format_two(string op, string operand);
+ 	// Supporting Functions //
  	int get_offset(string label, int base);
  	int get_offset(string label, string pc_counter, int index);
-
- 	string format_two(string opcode, string r1, string r2);
+ 	bool check_register(string r);
  	string get_reg_value(string r);
-
  	int set_ni_bit(string operand);
 	int set_xbpe_bit(string opcode,string operand,int base);
 	int hex_to_int(string s);
 	string int_to_hex(int num,int width);
 	bool is_format4(string opcode);
-	string assign_mach_code(string op, string operand);
+	string get_mach_code(string op, string operand);
  };
 
  #endif
