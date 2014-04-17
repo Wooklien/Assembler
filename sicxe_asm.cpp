@@ -16,6 +16,7 @@ sicxe_asm::sicxe_asm(string filename) {
 	init();
 
 	first(filename);
+	table.print_table();
 	second();
 	write_file(filename);
 }
@@ -406,7 +407,6 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand,int base){
 	if(is_format4(opcode)){
 		base = -1;
 	}
-
 	
 	//if(is_constant(opcode,operand)){
 	//	return 0;

@@ -33,7 +33,7 @@
  			return m_iter->second.first;
  		}
  		else {
- 			return symbol;
+ 			return to_uppercase(int_to_hex(string_to_int(symbol)));
  		}
  	}
 
@@ -58,3 +58,27 @@
  	}
  	return true;
  }
+
+ string symtab::int_to_hex(int num){
+	stringstream out;
+	out<<setw(5)<<setfill('0')<<hex<<num;
+	return out.str();
+}
+
+int symtab::string_to_int(string s){
+ istringstream instr(s);
+ int n;
+ instr >> n;
+ return n;
+}
+
+string symtab::to_uppercase(string s){
+	string tmp = s;
+	string::iterator iter;
+
+	for(iter = tmp.begin(); iter != tmp.end(); ++iter) {
+  		*iter = std::toupper((unsigned char)*iter);
+  	}
+	return tmp;
+}
+

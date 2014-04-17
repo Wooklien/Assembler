@@ -9,6 +9,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+ #include <iomanip>
 #include <sstream>
 #include <utility>
 #include "symtab_exception.h"
@@ -34,6 +35,9 @@
  	map<string,pair<string, bool> >::iterator m_iter;
 
  	bool exists(string symbol);
+ 	string int_to_hex(int num);
+ 	int string_to_int(string s);
+ 	string to_uppercase(string s);
  };
 
  #endif
