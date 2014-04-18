@@ -265,31 +265,41 @@ void sicxe_asm::add_symtab(string address, string label, string operand) {
 // Main Functions //
 void sicxe_asm::second() {
 	for(unsigned int i = 1; i < v_data.size(); i++) {
+		string op = v_data[i].opcode;
+		string operand = v_data[i].operand;
+		
 		try {
-			if(!check_asm_dir(v_data[i].opcode) && v_data[i].opcode.length() != 0) {
+			if(!check_asm_dir(op) && op.length() != 0) {
 				int size = opcode.get_instruction_size(v_data[i].opcode);
 
 				if(size == 1) {
-					cout << opcode.get_machine_code(v_data[i].opcode) << endl;
+					cout << opcode.get_machine_code(op) << endl;
 				}
 				if(size == 2) {
-					cout << format_two(v_data[i].opcode, v_data[i].operand) << endl;
+					cout << format_two(op, operand) << endl;
 				}
 
 				if(size == 3) {
-
+					if(base != -1 && operand.size() != 0) {
+						cout << get_mach_code(op, operand);
+						cout << hex << abs(int_value(table.get_value(operand)) - int_value(table.get_value(base_operand))) << endl;
+					}
+					else if(base == -1 && operand.size() != 0) {
+						cout << get_mach_code(op, operand);
+						cout << hex << int_to_hex(abs(int_value(table.get_value(operand)) - int_value(v_data[i].address)+3), 3) << endl;
+					}
 				}
 
 				if(size == 4) {
-					string machine_code = get_mach_code(v_data[i].opcode, v_data[i].operand);
-					string address = table.get_value(v_data[i].operand);
+					string machine_code = get_mach_code(op, operand);
+					string address = table.get_value(operand);
 					machine_code = machine_code + address;
 					cout << machine_code << endl;
 				}
 			}
 		}
-		catch(opcode_error_exception oe) {
-			// Throw Error
+		catch(symtab_exception s) {
+			cerr << "An error has occured: " << i  << " "  << v_data[i].operand << s.getMessage() << endl;			
 		}
 	}
 }
@@ -308,6 +318,7 @@ string sicxe_asm::get_mach_code(string op,  string operand){
 
 string sicxe_asm::format_two(string op, string operand) {
 	string machine_code = opcode.get_machine_code(op);
+	string tmp_opcode = upper(op);
 	stringstream str(operand);
 	string register_one = "0";
 	string register_two = "0";
@@ -315,8 +326,18 @@ string sicxe_asm::format_two(string op, string operand) {
 	getline(str, register_one, ',');
 	getline(str, register_two);
 
-	if(op == "SVC") {
-		machine_code = machine_code + register_one;
+	if(tmp_opcode == "SVC") {
+		istringstream buffer(register_one);
+		int value;
+		buffer >> value;
+		register_one = int_to_hex(value, 1);
+	}
+	else if(tmp_opcode == "SHIFTR" || tmp_opcode == "SHIFTL") {
+		stringstream value_str;
+		int value = int_value(register_two);
+		register_one = get_reg_value(register_one);
+		value_str << --value;
+		register_two = value_str.str();
 	}
 	else {
 		if(check_register(register_one)) {
@@ -325,9 +346,9 @@ string sicxe_asm::format_two(string op, string operand) {
 		if(check_register(register_two)) {
 			register_two = get_reg_value(register_two);
 		}
-		machine_code = machine_code + register_one + register_two;
 	}
-
+	
+	machine_code = machine_code + register_one + register_two;
 	return machine_code;
 
 }

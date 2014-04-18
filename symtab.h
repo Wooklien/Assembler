@@ -9,7 +9,7 @@
 #include <iostream>
 #include <map>
 #include <string>
- #include <iomanip>
+#include <iomanip>
 #include <sstream>
 #include <utility>
 #include "symtab_exception.h"
