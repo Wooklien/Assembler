@@ -96,7 +96,9 @@
  	void second();
  	string format_two(string op, string operand);
  	// Supporting Functions //
+ 	string parse_operand(string operand);
  	int get_offset(string label, string pc_counter);
+	int get_base_offset(string label, string base);
  	bool check_register(string r);
  	string get_reg_value(string r);
  	int set_ni_bit(string operand);

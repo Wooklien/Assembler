@@ -280,6 +280,7 @@ void sicxe_asm::second() {
 				}
 
 				if(size == 3) {
+					cout << "offset " << get_offset(operand, v_data[i].address) << endl;
 					cout << get_mach_code(op, operand, v_data[i].address) << endl;
 				}
 
@@ -354,13 +355,50 @@ string sicxe_asm::int_to_hex(int num,int width){
 	return upper(out.str());
 }
 
+string sicxe_asm::parse_operand(string operand) {
+	string temp = operand;
+	if(temp[0] == '#' || temp[0] == '@') {
+		temp.erase(0,1);
+	}
+
+	if(temp.find(',')) {
+		stringstream str(temp);
+ 		getline(str,temp,',');
+	}
+	return temp;
+}
+
 int sicxe_asm::get_offset(string label, string pc_counter) {
-	string tmp_label_address = table.get_value(label);
+	string operand = parse_operand(label);
 
-	int address = int_value(pc_counter);
-	int label_address = int_value(tmp_label_address);
+	if(!table.exists(operand)){
+		return int_value(operand);
+	}
 
-	return (label_address - (address+3));
+	int source = int_value(pc_counter);
+	int destination = int_value(table.get_value(operand));
+	int offset = destination - (source+3);
+
+	int tmp_base;	
+	if(offset >= -2048 && offset <= 2047){
+		tmp_base = -1;
+	}
+	else {
+		tmp_base = 1;
+	}
+
+	if(tmp_base == 1) {
+		return get_base_offset(operand, base_operand);
+	}
+	else {
+		return offset;
+	}
+}
+
+int sicxe_asm::get_base_offset(string label, string base) {
+	int label_address = int_value(table.get_value(label));
+	int base_address = int_value(table.get_value(base));
+	return (label_address - base_address);
 }
 
 bool sicxe_asm::check_register(string r) {
@@ -433,15 +471,7 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int
 			}
 		}
 		else {
-			if(operand[0] == '#' || operand[0] == '@') {
-				operand.erase(0,1);
-			}
-
-			string tmp_operand = operand;
-			if(operand.find(',')) {
-				stringstream str(operand);
- 				getline(str,tmp_operand,',');
-			}
+			string tmp_operand = parse_operand(operand);
 
 			if(table.exists(tmp_operand)) {
 				if(!x_in_operand && tmp_base == -1){
