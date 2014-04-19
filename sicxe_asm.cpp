@@ -433,6 +433,10 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int
 			}
 		}
 		else {
+			if(operand[0] == '#' || operand[0] == '@') {
+				operand.erase(0,1);
+			}
+			
 			if(table.exists(operand)) {
 				if(!x_in_operand && tmp_base == -1){
 					return 2;
