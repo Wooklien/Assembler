@@ -436,8 +436,14 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int
 			if(operand[0] == '#' || operand[0] == '@') {
 				operand.erase(0,1);
 			}
-			
-			if(table.exists(operand)) {
+
+			string tmp_operand = operand;
+			if(operand.find(',')) {
+				stringstream str(operand);
+ 				getline(str,tmp_operand,',');
+			}
+
+			if(table.exists(tmp_operand)) {
 				if(!x_in_operand && tmp_base == -1){
 					return 2;
 				}
