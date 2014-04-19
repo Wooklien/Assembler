@@ -17,6 +17,17 @@
  	}
  }
 
+ void symtab::modify(string symbol, string value, bool type) {
+ 	if(exists(symbol)) {
+
+ 		m_iter =  m.find(symbol);
+ 		m_iter->second.first = int_to_hex(string_to_int(value));
+ 	}
+ 	else {
+ 		throw symtab_exception("Cannot modify non-existing symbol.");
+ 	}
+ }
+
  string symtab::get_value(string symbol) {
 
  	if(symbol.find(',')) {

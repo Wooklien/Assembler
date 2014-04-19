@@ -44,6 +44,7 @@
 		string label;
 		string opcode;
 		string operand;
+		string machine;
 	};
 
 	parse_data data;

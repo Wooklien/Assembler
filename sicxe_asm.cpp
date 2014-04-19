@@ -18,6 +18,7 @@ sicxe_asm::sicxe_asm(string filename) {
 	first(filename);
 	table.print_table();
 	second();
+	table.print_table();
 	write_file(filename);
 }
 
@@ -158,18 +159,18 @@ void sicxe_asm::first(string filename) {
 }
 
 void sicxe_asm::write_file(string filename) {
-	const string columns [] = { "Line#","Address","Label","Opcode","Operand" };
-	const string purdylines [] = { "=====", "=======", "=====", "======", "=======" };
+	const string columns [] = { "Line#","Address","Label","Opcode","Operand","Machine Code" };
+	const string purdylines [] = { "=====", "=======", "=====", "======", "=======", "=======" };
 	
 	filename = filename.substr(0,filename.length()-4) + ".lis";
 	
 	myfile.open(filename.c_str());
 	
-	for (int i = 0; i < 5; i++) 
+	for (int i = 0; i < 6; i++) 
         myfile << setw(15) << setfill(' ') << columns[i]; 
     myfile << endl;
     
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 6; i++)
 	    myfile << setw(15) << setfill(' ') << purdylines[i];
 	myfile << endl;
 	
@@ -184,7 +185,8 @@ void sicxe_asm::write_file(string filename) {
         myfile << setw(15) << setfill(' ')  << v_data[i].address;
         myfile << setw(15) << setfill (' ') << v_data[i].label;
         myfile << setw(15) << setfill (' ') << v_data[i].opcode;
-        myfile << setw(15) << setfill (' ') << v_data[i].operand << endl;  
+        myfile << setw(15) << setfill (' ') << v_data[i].operand;
+        myfile << setw(15) << setfill (' ') << v_data[i].machine << endl;   
     } 
 }
 
@@ -269,25 +271,42 @@ void sicxe_asm::second() {
 		string operand = v_data[i].operand;
 		
 		try {
+
+			if(op == "EQU") {
+				table.modify(v_data[i].label, operand, isAbsolute(operand));
+			}
+
 			if(!check_asm_dir(op) && op.length() != 0) {
 				int size = opcode.get_instruction_size(v_data[i].opcode);
 
 				if(size == 1) {
+					v_data[i].machine = opcode.get_machine_code(op);
 					cout << opcode.get_machine_code(op) << endl;
 				}
 				if(size == 2) {
+					v_data[i].machine = format_two(op, operand);
 					cout << format_two(op, operand) << endl;
 				}
 
 				if(size == 3) {
-					cout << "offset " << get_offset(operand, v_data[i].address) << endl;
-					cout << get_mach_code(op, operand, v_data[i].address) << endl;
+					string machine_code = get_mach_code(op, operand, v_data[i].address);
+					string offset = int_to_hex(get_offset(operand, v_data[i].address),1);
+					if(offset.length() > 3){
+						offset = offset.substr((offset.length()-3),3);
+					}
+					if(offset.length() < 3){
+						offset = int_to_hex(get_offset(operand, v_data[i].address),3);
+					}
+					machine_code = machine_code + offset;
+					v_data[i].machine = machine_code;
+					cout << machine_code << endl;
 				}
 
 				if(size == 4) {
 					string machine_code = get_mach_code(op, operand, v_data[i].address);
 					string address = table.get_value(operand);
 					machine_code = machine_code + address;
+					v_data[i].machine = machine_code;
 					cout << machine_code << endl;
 				}
 			}
@@ -306,7 +325,7 @@ string sicxe_asm::get_mach_code(string op,  string operand, string pc_counter){
 	int second_half_byte = set_ni_bit(operand) + int_value(mach_opcode.substr(1,1));
 	mach_code.append(int_to_hex(second_half_byte,1));
 	mach_code.append(int_to_hex(set_xbpe_bit(op,operand,pc_counter,base),1));
-		
+	
 	return mach_code;
 }
 
@@ -344,7 +363,6 @@ string sicxe_asm::format_two(string op, string operand) {
 
 	machine_code = machine_code + register_one + register_two;
 	return machine_code;
-
 }
 
 // SUPPORTING FUNCTIONS //
@@ -372,6 +390,9 @@ int sicxe_asm::get_offset(string label, string pc_counter) {
 	string operand = parse_operand(label);
 
 	if(!table.exists(operand)){
+		if(!isdigit(operand[0])) {
+			return 0;
+		}
 		return int_value(operand);
 	}
 
@@ -421,11 +442,7 @@ string sicxe_asm::get_reg_value(string r) {
 }
 
 bool sicxe_asm::is_format4(string opcode){
-	if(opcode.find('+') != string::npos){
-		//cout<<"is format4"<<endl;
-		return true;
-	}
-	else{return false;}
+	return (opcode.find('+') != string::npos);
 }
 
 int sicxe_asm::set_ni_bit(string operand) {
