@@ -280,18 +280,11 @@ void sicxe_asm::second() {
 				}
 
 				if(size == 3) {
-					if(base != -1 && operand.size() != 0) {
-						cout << get_mach_code(op, operand);
-						cout << hex << abs(int_value(table.get_value(operand)) - int_value(table.get_value(base_operand))) << endl;
-					}
-					else if(base == -1 && operand.size() != 0) {
-						cout << get_mach_code(op, operand);
-						cout << hex << int_to_hex(abs(int_value(table.get_value(operand)) - int_value(v_data[i].address)+3), 3) << endl;
-					}
+					cout << get_mach_code(op, operand, v_data[i].address) << endl;
 				}
 
 				if(size == 4) {
-					string machine_code = get_mach_code(op, operand);
+					string machine_code = get_mach_code(op, operand, v_data[i].address);
 					string address = table.get_value(operand);
 					machine_code = machine_code + address;
 					cout << machine_code << endl;
@@ -304,14 +297,14 @@ void sicxe_asm::second() {
 	}
 }
 
-string sicxe_asm::get_mach_code(string op,  string operand){	
+string sicxe_asm::get_mach_code(string op,  string operand, string pc_counter){	
 	string mach_opcode = opcode.get_machine_code(op);
 	string mach_code = "";
 		
 	mach_code = mach_opcode[0];
 	int second_half_byte = set_ni_bit(operand) + int_value(mach_opcode.substr(1,1));
 	mach_code.append(int_to_hex(second_half_byte,1));
-	mach_code.append(int_to_hex(set_xbpe_bit(op,operand,base),1));
+	mach_code.append(int_to_hex(set_xbpe_bit(op,operand,pc_counter,base),1));
 		
 	return mach_code;
 }
@@ -347,7 +340,7 @@ string sicxe_asm::format_two(string op, string operand) {
 			register_two = get_reg_value(register_two);
 		}
 	}
-	
+
 	machine_code = machine_code + register_one + register_two;
 	return machine_code;
 
@@ -361,24 +354,15 @@ string sicxe_asm::int_to_hex(int num,int width){
 	return upper(out.str());
 }
 
-int sicxe_asm::get_offset(string label, int index) {
-	string tmp_base_address = table.get_value(base_operand);
+int sicxe_asm::get_offset(string label, string pc_counter) {
 	string tmp_label_address = table.get_value(label);
 
-	int base_ddress = int_value(tmp_base_address);
+	int address = int_value(pc_counter);
 	int label_address = int_value(tmp_label_address);
 
-	return label_address - base_ddress;
+	return (label_address - (address+3));
 }
 
-int sicxe_asm::get_offset(string label, string pc_counter, int index) {
-	string label_address = table.get_value(label);
-	
-	int tmp = int_value(label_address);
-	int tmp_pc = int_value(pc_counter);
-
-	return tmp - (tmp_pc + 3);
-}
 bool sicxe_asm::check_register(string r) {
 	string rgstr = upper(r);
 	if(reg.find(rgstr) != reg.end()) {
@@ -419,35 +403,40 @@ int sicxe_asm::set_ni_bit(string operand) {
 
 }
 
-int sicxe_asm::set_xbpe_bit(string opcode,string operand,int base){
-
+int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int base){
+	int tmp_base = base;
 	int ni_bit = set_ni_bit(operand);
 	//cout<<ni_bit<<endl;
 	bool x_in_operand = (operand.find(",x") != string::npos);
+	string tmp_operand = table.get_value(operand);
+
+	if(get_offset(operand,pc_counter) >= -2048 && get_offset(operand,pc_counter) <= 2047){
+		tmp_base = -1;
+	}
+	else {
+		tmp_base = 1;
+	}
 
 	if(is_format4(opcode)){
-		base = -1;
+		tmp_base = -1;
 	}
 	
-	//if(is_constant(opcode,operand)){
-	//	return 0;
-	//}
 	if(!x_in_operand && is_format4(opcode)){
 		return 1;
 	}
-	else if(!x_in_operand && base == -1){
+	else if(!x_in_operand && tmp_base == -1){
 		return 2;
 	}
-	else if(!x_in_operand && base != -1){
+	else if(!x_in_operand && tmp_base != -1){
 		return 4;
 	}
-	else if(x_in_operand && base != -1){
+	else if(x_in_operand && tmp_base != -1){
 		return 12;
 	}
 	else if(x_in_operand && is_format4(opcode)){		
 		return 9;
 	}
-	else if(base == -1 && x_in_operand && ni_bit == 3){
+	else if(tmp_base == -1 && x_in_operand && ni_bit == 3){
 		return 10;
 	}
 	else{

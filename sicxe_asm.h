@@ -96,16 +96,15 @@
  	void second();
  	string format_two(string op, string operand);
  	// Supporting Functions //
- 	int get_offset(string label, int base);
- 	int get_offset(string label, string pc_counter, int index);
+ 	int get_offset(string label, string pc_counter);
  	bool check_register(string r);
  	string get_reg_value(string r);
  	int set_ni_bit(string operand);
-	int set_xbpe_bit(string opcode,string operand,int base);
+	int set_xbpe_bit(string opcode,string operand, string pc_counter, int base);
 	int hex_to_int(string s);
 	string int_to_hex(int num,int width);
 	bool is_format4(string opcode);
-	string get_mach_code(string op, string operand);
+	string get_mach_code(string op, string operand, string pc_counter);
  };
 
  #endif

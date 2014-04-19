@@ -28,7 +28,7 @@ first   NORM
         Clear   T
         +ldt    #50000	
         ldx     #0
-        +jsub    first
+        +jsub   bsrch
 addl    lda     alpha,x   .loop control     
         add     beta,x
         sta     gamma,x     . extra space for testing                                

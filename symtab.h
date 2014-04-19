@@ -27,14 +27,13 @@
 
  	// Takes a SIC/XE label as a key and returns its corresponding value.
  	string get_value(string symbol);
-
+ 	bool exists(string symbol);
  	void print_table();
 
  private:
  	map<string,pair<string, bool> > m;
  	map<string,pair<string, bool> >::iterator m_iter;
 
- 	bool exists(string symbol);
  	string int_to_hex(int num);
  	int string_to_int(string s);
  	string to_uppercase(string s);
