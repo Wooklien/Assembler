@@ -391,16 +391,20 @@ bool sicxe_asm::is_format4(string opcode){
 }
 
 int sicxe_asm::set_ni_bit(string operand) {
-	if(operand.find('#') != string::npos) {
-		return 1;
+	if(operand.size() != 0) {
+		if(operand.find('#') != string::npos) {
+			return 1;
+		}
+		else if(operand.find('@') != string::npos) {
+			return 2;
+		}
+		else{
+			return 3;
+		}
 	}
-	else if(operand.find('@') != string::npos) {
-		return 2;
-	}
-	else{
+	else {
 		return 3;
 	}
-
 }
 
 int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int base){
@@ -408,39 +412,51 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int
 	int ni_bit = set_ni_bit(operand);
 	//cout<<ni_bit<<endl;
 	bool x_in_operand = (operand.find(",x") != string::npos);
-	string tmp_operand = table.get_value(operand);
+	
+	if(operand.size() != 0) {
+		string tmp_operand = table.get_value(operand);
 
-	if(get_offset(operand,pc_counter) >= -2048 && get_offset(operand,pc_counter) <= 2047){
-		tmp_base = -1;
+		if(get_offset(operand,pc_counter) >= -2048 && get_offset(operand,pc_counter) <= 2047){
+			tmp_base = -1;
+		}
+		else {
+			tmp_base = 1;
+		}
+
+		if(is_format4(opcode)){
+			tmp_base = -1;
+			if(!x_in_operand) {
+				return 1;
+			}
+			else {
+				return 9;
+			}
+		}
+		else {
+			if(table.exists(operand)) {
+				if(!x_in_operand && tmp_base == -1){
+					return 2;
+				}
+				else if(!x_in_operand && tmp_base != -1){
+					return 4;
+				}
+				else if(x_in_operand && tmp_base != -1){
+					return 12;
+				}
+				else if(tmp_base == -1 && x_in_operand && ni_bit == 3){
+					return 10;
+				}
+				else{
+					return 8;
+				}
+			}
+			else {
+				return 0;
+			}
+		}
 	}
 	else {
-		tmp_base = 1;
-	}
-
-	if(is_format4(opcode)){
-		tmp_base = -1;
-	}
-	
-	if(!x_in_operand && is_format4(opcode)){
-		return 1;
-	}
-	else if(!x_in_operand && tmp_base == -1){
-		return 2;
-	}
-	else if(!x_in_operand && tmp_base != -1){
-		return 4;
-	}
-	else if(x_in_operand && tmp_base != -1){
-		return 12;
-	}
-	else if(x_in_operand && is_format4(opcode)){		
-		return 9;
-	}
-	else if(tmp_base == -1 && x_in_operand && ni_bit == 3){
-		return 10;
-	}
-	else{
-		return 8;
+		return 0;
 	}
 }
 
