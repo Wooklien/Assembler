@@ -373,11 +373,20 @@ string sicxe_asm::parse_operand(string operand) {
 
 int sicxe_asm::get_offset(string label, string pc_counter) {
 	string operand = parse_operand(label);
+	string value;
+
+	if(label.size() == 0) {
+		value = "0";
+	}
+	else {
+		value = table.get_value(label);
+	}
+
 	if(!table.exists(operand)){
 		if(!isdigit(operand[0])) {
 			return 0;
 		}
-		return int_value(operand);
+		return int_value(value);
 	}
 
 	int source = int_value(pc_counter);

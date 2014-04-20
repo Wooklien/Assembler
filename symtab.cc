@@ -29,12 +29,10 @@
  }
 
  string symtab::get_value(string symbol) {
-
  	if(symbol.find(',')) {
  		stringstream str(symbol);
  		getline(str,symbol,',');
  	}
-
  	if(symbol[0] == '#' || symbol[0] == '@') {
  		symbol.erase(0,1);
 
