@@ -294,7 +294,7 @@ void sicxe_asm::second() {
 			}
 		}
 		catch(symtab_exception s) {
-			cerr << "An error has occured: " << i  << " "  << v_data[i].operand << s.getMessage() << endl;			
+			cerr << "An error has occured on line: " << i << ", " << s.getMessage() << endl;			
 		}
 	}
 }
@@ -390,7 +390,7 @@ int sicxe_asm::get_offset(string label, string pc_counter) {
 		tmp_base = 1;
 	}
 
-	if(tmp_base == 1) {
+	if(tmp_base == 1 && base == 1) {
 		return get_base_offset(operand, base_operand);
 	}
 	else {
@@ -447,14 +447,19 @@ int sicxe_asm::set_ni_bit(string operand) {
 int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int base){
 	int tmp_base = base;
 	int ni_bit = set_ni_bit(operand);
-	//cout<<ni_bit<<endl;
 	bool x_in_operand = (operand.find(",x") != string::npos);
 	
 	if(operand.size() != 0) {
-		string tmp_operand = table.get_value(operand);
+		bool format4range = false;
+
+		int displacement = get_offset(operand,pc_counter);
 
 		if(get_offset(operand,pc_counter) >= -2048 && get_offset(operand,pc_counter) <= 2047){
 			tmp_base = -1;
+		}
+		else if((displacement > 2047 || displacement < -2048) && base == -1 && !is_format4(opcode)) {
+			ss << "Displacement is out of range.";
+			throw symtab_exception (ss.str());
 		}
 		else {
 			tmp_base = 1;
@@ -471,18 +476,23 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int
 		}
 		else {
 			string tmp_operand = parse_operand(operand);
+			bool base_relative = false;
+
+			if(tmp_base != -1 && base != -1) {
+				base_relative = true;
+			}
 
 			if(table.exists(tmp_operand)) {
-				if(!x_in_operand && tmp_base == -1){
+				if(!x_in_operand && base_relative == false){
 					return 2;
 				}
-				else if(!x_in_operand && tmp_base != -1){
+				else if(!x_in_operand && base_relative != false){
 					return 4;
 				}
-				else if(x_in_operand && tmp_base != -1){
+				else if(x_in_operand && base_relative != false){
 					return 12;
 				}
-				else if(tmp_base == -1 && x_in_operand && ni_bit == 3){
+				else if(base_relative == false && x_in_operand && ni_bit == 3){
 					return 10;
 				}
 				else{

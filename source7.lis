@@ -30,7 +30,7 @@
              28          00034                         Clear              T           B450
              29          00036                          +ldt         #50000       7510C350
              30          0003A                           ldx             #0         050000
-             31          0003D                         +jsub          bsrch       4B100000
+             31          0003D                         +jsub          bsrch       4B101770
              32          00041           addl            lda        alpha,x         03A014
              33          00044                           add         beta,x         1BA13D
              34          00047                           sta        gamma,x         0FA266
