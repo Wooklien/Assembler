@@ -16,9 +16,7 @@ sicxe_asm::sicxe_asm(string filename) {
 	init();
 
 	first(filename);
-	table.print_table();
 	second();
-	table.print_table();
 	write_file(filename);
 }
 
@@ -50,7 +48,7 @@ void sicxe_asm::assign_address(file_parser parser) {
 			}
 			else if(!ignore_case(data.opcode) && start == -1) {
 				ss << "Error on line: " << i << ". Invalid operation! Opcode operation before Start.";
-				throw symtab_exception(ss.str());
+				throw ss.str();
 			}
 		}
 		// Adding user defined labels to symbol tabel.
@@ -65,18 +63,13 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 	string tmp_opcode = upper(op);
 	if(operand[0] == '@' || operand[0] == '#' || operand[1] == '@' || operand[1] == '#') {
         	ss << "Error on line: " << index << ". Addressing modes do not apply to assembly directives.";
-        	throw symtab_exception(ss.str());
+        	throw ss.str();
     	}
     	else{
 		if(tmp_opcode == "START") {
 			start = 1;
-			if(operand[0] == '@') {
-				// throw error.
-			}
-			else {
-				value = int_value(operand);
-				asm_address = value;
-			}
+			value = int_value(operand);
+			asm_address = value;
 		}
 		else if(tmp_opcode == "BASE") {
 			base_operand = operand;
@@ -87,13 +80,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 		}
 		else {
 			start = 1;
-
-			if(operand[0] == '@') {
-				// throw error.
-			}
-			else {
-				value = hex_value(operand);
-			}
+			value = hex_value(operand);
 
 			int size = asm_dir.find(tmp_opcode)->second; // Getting Operation Size.
 	
@@ -109,7 +96,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 					}
 					else {
 						ss << "Error on line: " << index << ". Invalid operand size. Hex value should be even.";
-						throw symtab_exception(ss.str());
+						throw ss.str();
 					}
 				}
 				else {
@@ -271,7 +258,6 @@ void sicxe_asm::second() {
 		string operand = v_data[i].operand;
 		
 		try {
-
 			if(op == "EQU") {
 				table.modify(v_data[i].label, operand, isAbsolute(operand));
 			}
@@ -281,11 +267,9 @@ void sicxe_asm::second() {
 
 				if(size == 1) {
 					v_data[i].machine = opcode.get_machine_code(op);
-					cout << opcode.get_machine_code(op) << endl;
 				}
 				if(size == 2) {
 					v_data[i].machine = format_two(op, operand);
-					cout << format_two(op, operand) << endl;
 				}
 
 				if(size == 3) {
@@ -299,7 +283,6 @@ void sicxe_asm::second() {
 					}
 					machine_code = machine_code + offset;
 					v_data[i].machine = machine_code;
-					cout << machine_code << endl;
 				}
 
 				if(size == 4) {
@@ -307,7 +290,6 @@ void sicxe_asm::second() {
 					string address = table.get_value(operand);
 					machine_code = machine_code + address;
 					v_data[i].machine = machine_code;
-					cout << machine_code << endl;
 				}
 			}
 		}
