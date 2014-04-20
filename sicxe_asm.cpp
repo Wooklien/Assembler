@@ -48,7 +48,7 @@ void sicxe_asm::assign_address(file_parser parser) {
 			}
 			else if(!ignore_case(data.opcode) && start == -1) {
 				ss << "Error on line: " << i << ". Invalid operation! Opcode operation before Start.";
-				throw ss.str();
+				throw opcode_error_exception(ss.str());
 			}
 		}
 		// Adding user defined labels to symbol tabel.
@@ -63,7 +63,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 	string tmp_opcode = upper(op);
 	if(operand[0] == '@' || operand[0] == '#' || operand[1] == '@' || operand[1] == '#') {
         	ss << "Error on line: " << index << ". Addressing modes do not apply to assembly directives.";
-        	throw ss.str();
+        	throw symtab_exception(ss.str());
     	}
     	else{
 		if(tmp_opcode == "START") {
@@ -96,7 +96,7 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 					}
 					else {
 						ss << "Error on line: " << index << ". Invalid operand size. Hex value should be even.";
-						throw ss.str();
+						throw symtab_exception(ss.str());
 					}
 				}
 				else {
@@ -262,7 +262,7 @@ void sicxe_asm::second() {
 				table.modify(v_data[i].label, operand, isAbsolute(operand));
 			}
 
-			if(!check_asm_dir(op) && op.length() != 0) {
+			if(!check_asm_dir(op) && op.length() != 0 && op[0] != '.') {
 				int size = opcode.get_instruction_size(v_data[i].opcode);
 
 				if(size == 1) {
@@ -293,8 +293,11 @@ void sicxe_asm::second() {
 				}
 			}
 		}
-		catch(symtab_exception s) {
-			cerr << "An error has occured on line: " << i << ", " << s.getMessage() << endl;			
+		catch(opcode_error_exception oe) {
+			cerr << "An Opcode error has occured on line: " << i+1 << ", " << oe.getMessage() << endl;			
+		}
+		catch(symtab_exception se) {
+			cerr << "An error has occured on line: " << i+1 << ", " << se.getMessage() << endl;			
 		}
 	}
 }
@@ -370,7 +373,6 @@ string sicxe_asm::parse_operand(string operand) {
 
 int sicxe_asm::get_offset(string label, string pc_counter) {
 	string operand = parse_operand(label);
-
 	if(!table.exists(operand)){
 		if(!isdigit(operand[0])) {
 			return 0;
@@ -450,7 +452,6 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int
 	bool x_in_operand = (operand.find(",x") != string::npos);
 	
 	if(operand.size() != 0) {
-		bool format4range = false;
 
 		int displacement = get_offset(operand,pc_counter);
 
@@ -459,7 +460,7 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int
 		}
 		else if((displacement > 2047 || displacement < -2048) && base == -1 && !is_format4(opcode)) {
 			ss << "Displacement is out of range.";
-			throw symtab_exception (ss.str());
+			throw symtab_exception(ss.str());
 		}
 		else {
 			tmp_base = 1;
