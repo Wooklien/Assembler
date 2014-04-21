@@ -99,8 +99,11 @@ void sicxe_asm::handle_asm_dir(string op, string operand, int index) {
 						throw symtab_exception(ss.str());
 					}
 				}
-				else {
+				else if(operand[0] == 'c' || operand[0] == 'C') {
 					asm_address += (length * size);
+				}
+				else {
+					asm_address += size;
 				}
 			}
 			else {
@@ -292,6 +295,29 @@ void sicxe_asm::second() {
 					v_data[i].machine = machine_code;
 				}
 			}
+			else if(upper(op) == "BYTE") {
+				if(operand[0] == 'c' || operand[0] == 'C') {
+					int first = operand.find_first_of('\'',0) + 1;
+					int last = operand.find_last_of('\'', operand.length()) - 2;
+					string str = operand.substr(first, last);
+					string machine_code = "";
+
+					int j;
+					for(unsigned int n = 0; n < str.length(); n++) {
+						j = str[n];
+						machine_code += int_to_hex(j, 2);
+					}
+					v_data[i].machine = machine_code;
+				}
+				else if(operand[0] == 'x' || operand[0] == 'X') {
+					int first = operand.find_first_of('\'',0) + 1;
+					int last = operand.find_last_of('\'', operand.length()) - 2;
+					v_data[i].machine = operand.substr(first, last);
+				}
+			}
+			else if(upper(op) == "WORD") {
+				v_data[i].machine = int_to_hex(hex_value(operand), 6);
+			}
 		}
 		catch(opcode_error_exception oe) {
 			cerr << "An Opcode error has occured on line: " << i+1 << ", " << oe.getMessage() << endl;			
@@ -455,7 +481,7 @@ int sicxe_asm::set_ni_bit(string operand) {
 int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int base){
 	int tmp_base = base;
 	int ni_bit = set_ni_bit(operand);
-	bool x_in_operand = (operand.find(",x") != string::npos);
+	bool x_in_operand = (upper(operand).find(",X") != string::npos);
 	
 	if(operand.size() != 0) {
 
