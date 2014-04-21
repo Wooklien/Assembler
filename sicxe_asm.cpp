@@ -299,10 +299,9 @@ void sicxe_asm::second() {
 				if(upper(operand)[0] == 'C' || upper(operand)[0] == 'X') {
 					string str = operand.substr(2,operand.find_last_of('\'')-2);
 					string machine_code = "";
-                	 		if (operand[0] == 'C'){
-					   	int j;
+                	 		if (upper(operand)[0] == 'C'){
 					   	for(unsigned int n = 0; n < str.length(); n++) {
-						  	j = str[n];
+						  	int j = str[n];
 						  	machine_code += int_to_hex(j, 2);
 					   	}
 					   	v_data[i].machine = machine_code;
