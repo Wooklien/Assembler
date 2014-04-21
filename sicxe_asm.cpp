@@ -296,25 +296,25 @@ void sicxe_asm::second() {
 				}
 			}
 			else if(upper(op) == "BYTE") {
-				if(operand[0] == 'c' || operand[0] == 'C') {
-					int first = operand.find_first_of('\'',0) + 1;
-					int last = operand.find_last_of('\'', operand.length()) - 2;
-					string str = operand.substr(first, last);
+				if(upper(operand)[0] == 'C' || upper(operand)[0] == 'X') {
+					string str = operand.substr(2,operand.find_last_of('\'')-2);
 					string machine_code = "";
-
-					int j;
-					for(unsigned int n = 0; n < str.length(); n++) {
-						j = str[n];
-						machine_code += int_to_hex(j, 2);
-					}
-					v_data[i].machine = machine_code;
-				}
-				else if(operand[0] == 'x' || operand[0] == 'X') {
-					int first = operand.find_first_of('\'',0) + 1;
-					int last = operand.find_last_of('\'', operand.length()) - 2;
-					v_data[i].machine = operand.substr(first, last);
-				}
-			}
+                	 		if (upper(operand)[0] == 'C'){
+					   	int j;
+					   	for(unsigned int n = 0; n < str.length(); n++) {
+							j = str[n];
+						  	machine_code += int_to_hex(j, 2);
+					   	}
+					   	v_data[i].machine = machine_code;
+				    	}
+					else {
+						v_data[i].machine = str;
+                    			}
+				 }
+			   	else {
+                			v_data[i].machine = int_to_hex(hex_value(operand), 6);   
+                		}     
+            		}
 			else if(upper(op) == "WORD") {
 				v_data[i].machine = int_to_hex(hex_value(operand), 6);
 			}
