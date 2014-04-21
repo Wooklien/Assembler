@@ -259,7 +259,6 @@ void sicxe_asm::second() {
 	for(unsigned int i = 1; i < v_data.size(); i++) {
 		string op = upper(v_data[i].opcode);
 		string operand = upper(v_data[i].operand);
-		string machine_code = "";
 		
 		try {
 			if(op == "EQU") {
@@ -277,7 +276,7 @@ void sicxe_asm::second() {
 				}
 
 				if(size == 3) {
-					machine_code = get_mach_code(op, operand, v_data[i].address);
+					string machine_code = get_mach_code(op, operand, v_data[i].address);
 					string offset = int_to_hex(get_offset(operand, v_data[i].address),1);
 					if(offset.length() > 3){
 						offset = offset.substr((offset.length()-3),3);
@@ -290,32 +289,32 @@ void sicxe_asm::second() {
 				}
 
 				if(size == 4) {
-					machine_code = get_mach_code(op, operand, v_data[i].address);
+					string machine_code = get_mach_code(op, operand, v_data[i].address);
 					string address = table.get_value(operand);
 					machine_code = machine_code + address;
 					v_data[i].machine = machine_code;
 				}
 			}
 			else if(op == "BYTE") {
-				if(operand[0] == 'C' || operand[0] == 'X') {
+				if(operand)[0] == 'C' || operand[0] == 'X') {
 					string str = operand.substr(2,operand.find_last_of('\'')-2);
-					machine_code = "";
-                	 		if (operand[0] == 'C'){
-					   	for(unsigned int n = 0; n < str.length(); n++) {
-							int j = str[n];
-						  	machine_code += int_to_hex(j, 2);
-					   	}
-					   	v_data[i].machine = machine_code;
+					string machine_code = "";
+                			if (operand[0] == 'C'){
+					 	for(unsigned int n = 0; n < str.length(); n++) {
+						  	int j = str[n];
+							machine_code += int_to_hex(j, 2);
+					   }
+					   v_data[i].machine = machine_code;
 				    	}
 					else {
 						v_data[i].machine = str;
-                    			}
-				 }
-			   	else {
-                			v_data[i].machine = int_to_hex(hex_value(operand), operand.length());   
-                		}     
+                			}
+			     	}
+			     	else {
+                    			v_data[i].machine = int_to_hex(hex_value(operand), operand.length());  
+        		 	}     
             		}
-			else if(upper(op) == "WORD") {
+			else if(op == "WORD") {
 				v_data[i].machine = int_to_hex(hex_value(operand), operand.length());
 			}
 		}
