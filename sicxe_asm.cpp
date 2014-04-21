@@ -383,9 +383,6 @@ int sicxe_asm::get_offset(string label, string pc_counter) {
 	}
 
 	if(!table.exists(operand)){
-		if(!isdigit(operand[0])) {
-			return 0;
-		}
 		return int_value(value);
 	}
 
@@ -468,6 +465,10 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int
 			tmp_base = -1;
 		}
 		else if((displacement > 2047 || displacement < -2048) && base == -1 && !is_format4(opcode)) {
+			ss << "Displacement is out of range.";
+			throw symtab_exception(ss.str());
+		}
+		else if((displacement > 524287 || displacement < -524288) && base == -1 && is_format4(opcode)){
 			ss << "Displacement is out of range.";
 			throw symtab_exception(ss.str());
 		}
