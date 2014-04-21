@@ -257,11 +257,11 @@ void sicxe_asm::add_symtab(string address, string label, string operand) {
 // Main Functions //
 void sicxe_asm::second() {
 	for(unsigned int i = 1; i < v_data.size(); i++) {
-		string op = upper(v_data[i].opcode);
-		string operand = upper(v_data[i].operand);
+		string op = v_data[i].opcode;
+		string operand = v_data[i].operand;
 		
 		try {
-			if(op == "EQU") {
+			if(upper(op) == "EQU") {
 				table.modify(v_data[i].label, operand, isAbsolute(operand));
 			}
 
@@ -295,26 +295,27 @@ void sicxe_asm::second() {
 					v_data[i].machine = machine_code;
 				}
 			}
-			else if(op == "BYTE") {
-				if(operand)[0] == 'C' || operand[0] == 'X') {
+			else if(upper(op) == "BYTE") {
+				if(upper(operand)[0] == 'C' || upper(operand)[0] == 'X') {
 					string str = operand.substr(2,operand.find_last_of('\'')-2);
 					string machine_code = "";
-                			if (operand[0] == 'C'){
-					 	for(unsigned int n = 0; n < str.length(); n++) {
-						  	int j = str[n];
-							machine_code += int_to_hex(j, 2);
-					   }
-					   v_data[i].machine = machine_code;
-				    	}
-					else {
+                	 		if (operand[0] == 'C'){
+					   	int j;
+					   	for(unsigned int n = 0; n < str.length(); n++) {
+						  	j = str[n];
+						  	machine_code += int_to_hex(j, 2);
+					   	}
+					   	v_data[i].machine = machine_code;
+					    }
+				    	else {
 						v_data[i].machine = str;
-                			}
-			     	}
+			           	}
+			     }
 			     	else {
-                    			v_data[i].machine = int_to_hex(hex_value(operand), operand.length());  
-        		 	}     
+                    			v_data[i].machine = int_to_hex(hex_value(operand), operand.length());
+                		}     
             		}
-			else if(op == "WORD") {
+			else if(upper(op) == "WORD") {
 				v_data[i].machine = int_to_hex(hex_value(operand), operand.length());
 			}
 		}
