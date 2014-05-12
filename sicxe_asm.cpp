@@ -18,7 +18,14 @@ sicxe_asm::sicxe_asm(string filename) {
 	first(filename);
 	second();
 	write_file(filename);
+	write_object_file(filename);
 }
+
+void sicxe_asm::print_equ() {
+ 	for(equ_iter = equ.begin(); equ_iter != equ.end(); ++equ_iter) {
+ 		cout << equ_iter->first << "\t" << equ_iter->second << endl;
+ 	}
+ }
 
 void sicxe_asm::assign_address(file_parser parser) {
 	for(int i = 1; i < parser.size(); i++) {
@@ -145,7 +152,6 @@ void sicxe_asm::first(string filename) {
 	file_parser parser(filename);
 	parser.read_file();
 	assign_address(parser);
-
 }
 
 void sicxe_asm::write_file(string filename) {
@@ -177,7 +183,8 @@ void sicxe_asm::write_file(string filename) {
         myfile << setw(15) << setfill (' ') << v_data[i].opcode;
         myfile << setw(15) << setfill (' ') << v_data[i].operand;
         myfile << setw(15) << setfill (' ') << v_data[i].machine << endl;   
-    } 
+    }
+    myfile.close(); 
 }
 
 void sicxe_asm::print_symtab() {
@@ -263,6 +270,7 @@ void sicxe_asm::second() {
 		try {
 			if(upper(op) == "EQU") {
 				table.modify(v_data[i].label, operand, isAbsolute(operand));
+				equ[v_data[i].label] = operand;
 			}
 
 			if(!check_asm_dir(op) && op.length() != 0 && op[0] != '.') {
@@ -299,23 +307,26 @@ void sicxe_asm::second() {
 				if(upper(operand)[0] == 'C' || upper(operand)[0] == 'X') {
 					string str = operand.substr(2,operand.find_last_of('\'')-2);
 					string machine_code = "";
-                	 		if (upper(operand)[0] == 'C'){
+
+					if (upper(operand)[0] == 'C'){
+						int j;
 					   	for(unsigned int n = 0; n < str.length(); n++) {
-						  	int j = str[n];
+							j = str[n];
 						  	machine_code += int_to_hex(j, 2);
 					   	}
+
 					   	v_data[i].machine = machine_code;
-					    }
-				    	else {
+				    }
+					else {
 						v_data[i].machine = str;
-			           	}
-			     }
-			     	else {
-                    			v_data[i].machine = int_to_hex(hex_value(operand), operand.length());
-                		}     
-            		}
+					}
+				}
+			   	else {
+			   		v_data[i].machine = int_to_hex(hex_value(operand), operand.length());
+			   	}     
+			}
 			else if(upper(op) == "WORD") {
-				v_data[i].machine = int_to_hex(hex_value(operand), operand.length());
+				v_data[i].machine = int_to_hex(hex_value(operand), 6);
 			}
 		}
 		catch(opcode_error_exception oe) {
@@ -543,6 +554,98 @@ int sicxe_asm::set_xbpe_bit(string opcode,string operand, string pc_counter, int
 	else {
 		return 0;
 	}
+}
+
+// Object Funtion
+void sicxe_asm::write_object_file(string filename) {
+	bool h_flag = true;
+	bool t_flag = true;
+
+	int size = 0;
+	int next;
+
+	string header = "H";
+	string ender = "E";
+	string texter = "T";
+	string machiner = "";
+	string s_address = "";
+	string e_address = "";
+
+	vector<string> v_texter;
+
+	for(unsigned int i = 0; i < v_data.size(); i++) {
+		string opcode = upper(v_data[i].opcode);
+
+		if(opcode == "START") {
+			string label = upper(v_data[i].label);
+			if(label.size() == 4) {
+				label = label + "  ";
+			}
+			header = header + label;
+		}
+		if(opcode == "END") {
+			e_address = v_data[i].address;
+		}
+
+		if(v_data[i].machine.size() != 0) {
+			machiner += v_data[i].machine;
+			size += v_data[i].machine.size();
+			next = size + v_data[i+1].machine.size();
+
+			if(h_flag) {
+				s_address = int_to_hex(int_value(v_data[i].address),6);
+				h_flag = false;
+			}
+			if(t_flag) {
+				texter = texter + int_to_hex(int_value(v_data[i].address),6);
+				t_flag = false;
+			}
+			if(next > 60) {
+				texter = texter + int_to_hex(machiner.size()/2,2) + machiner;
+				v_texter.push_back(texter);
+				size = 0;
+				t_flag = true;
+				machiner = "";
+				texter = "T";
+			}
+		}
+		else if(v_data[i].machine.size() == 0 && size >0){
+			texter = texter + int_to_hex(machiner.size()/2,2) + machiner;
+			v_texter.push_back(texter);
+			size = 0;
+			t_flag = true;
+			machiner = "";
+			texter = "T";
+		}
+	}
+
+	int offset = int_value(e_address) - int_value(s_address);
+	header = header + s_address + int_to_hex(offset,6);
+	ender = ender + int_to_hex(int_value(s_address),6);
+
+	filename = filename.substr(0,filename.length()-4) + ".o";
+	myfile.open(filename.c_str());
+
+	myfile << header << endl;
+	for(unsigned int i = 0; i < v_texter.size(); i++) {
+		myfile << v_texter[i] << endl;
+	}
+	myfile << ender << endl;
+	myfile.close();
+}
+
+string sicxe_asm::get_equ(string symbol) {
+	if(equ.find(symbol) == equ.end()) {
+		return symbol;
+	}
+	return get_equ(equ.find(symbol)->second);
+}
+
+void sicxe_asm::process_equ() {
+	for(equ_iter = equ.begin(); equ_iter != equ.end(); ++equ_iter) {
+ 		equ[equ_iter->first] = get_equ(equ_iter->first);
+ 	}
+ 	print_equ();
 }
 
 int main(int argc, char *argv[]) {

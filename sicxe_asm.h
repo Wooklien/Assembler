@@ -55,6 +55,9 @@
 	map<string,string> reg;
 	map<string,string>::iterator reg_iter;
 
+	map<string,string> equ;
+	map<string,string>::iterator equ_iter;
+
 	vector<parse_data> v_data;
 	vector<parse_data>::iterator v_iter;
 
@@ -108,6 +111,13 @@
 	string int_to_hex(int num,int width);
 	bool is_format4(string opcode);
 	string get_mach_code(string op, string operand, string pc_counter);
+
+	// Object Funtion
+	void write_object_file(string filename);
+	// Proccessing EQU, unlimited casscading
+	void print_equ();
+	void process_equ();
+	string get_equ(string symbol);
  };
 
  #endif
